@@ -1,1 +1,510 @@
-PLACEHOLDER
+"""MousaviTax API Gateway – health + Waiver + RAG + Cases/Services (ADR-007)."""
+
+from __future__ import annotations
+
+import os
+import sys
+from pathlib import Path
+from typing import Any, Optional
+
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+
+ROOT = Path(__file__).resolve().parents[3]
+PACKAGES = ROOT / "packages"
+for sub in (
+    "shared",
+    "ai-gateway/app",
+    "taxlaw-engine",
+    "prompt-engine",
+    "knowledge-core",
+    "embedding-service/app",
+    "retrieval-engine/app",
+    "document-parser",
+):
+    p = PACKAGES / sub
+    if p.exists() and str(p) not in sys.path:
+        sys.path.insert(0, str(p))
+
+os.environ.setdefault(
+    "VECTOR_DB_PATH", str(ROOT / "data" / "iran_tax_vectors.json")
+)
+os.environ.setdefault("EMBEDDING_PROVIDER", "fallback")
+
+app = FastAPI(
+    title="MousaviTax API Gateway",
+    version="0.5.0",
+    description="MKA / ARYA – Iran Tax API (waiver + RAG + Tax Case + Services)",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:3001",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True,
+)
+
+# Cases / services / triage
+try:
+    from cases import router as cases_router
+
+    app.include_router(cases_router)
+except Exception as e:  # pragma: no cover
+    import logging
+
+    logging.getLogger("mousavitax").warning("cases router not loaded: %s", e)
+
+_ks: Any = None
+
+
+def get_knowledge() -> Any:
+    global _ks
+    if _ks is not None:
+        return _ks
+    try:
+        from knowledge_core import KnowledgeService  # type: ignore
+
+        _ks = KnowledgeService(
+            persist_path=os.environ.get(
+                "VECTOR_DB_PATH", str(ROOT / "data" / "iran_tax_vectors.json")
+            )
+        )
+    except Exception:
+        _ks = None
+    return _ks
+
+
+_gateway: Any = None
+
+
+def get_gateway() -> Any:
+    global _gateway
+    if _gateway is not None:
+        return _gateway
+    try:
+        from gateway import AIGateway  # type: ignore
+
+        _gateway = AIGateway()
+    except Exception:
+        _gateway = None
+    return _gateway
+
+
+SYSTEM_TAX = """شما دستیار مشاور مالیاتی فارسی‌زبان MousaviTax هستید.
+فقط بر اساس شواهد بازیابی‌شده پاسخ دهید. اگر شواهد کافی نیست بگویید.
+در پایان منابع را به‌صورت فهرست ذکر کنید.
+تصمیم نهایی با مشاور رسمی است؛ پیشنهاد شما جایگزین رأی سازمان نیست.
+لحن رسمی، دقیق و مختصر باشد."""
+
+
+@app.get("/health")
+async def health():
+    ks = get_knowledge()
+    return {
+        "status": "ok",
+        "service": "mousavitax-api",
+        "version": "0.5.0",
+        "knowledge_chunks": ks.count() if ks else 0,
+    }
+
+
+try:
+    from taxlaw_engine import (
+        CIRCULAR_CONFIG,
+        DOC_CHECKLIST,
+        DEFAULT_PENALTY_TYPES,
+        PenaltyRow,
+        WaiverInput,
+        calculate_waiver,
+        run_smoke_tests,
+        WAIVER_VERSION,
+    )
+except ImportError:
+    calculate_waiver = None  # type: ignore
+    run_smoke_tests = None  # type: ignore
+    CIRCULAR_CONFIG = {}  # type: ignore
+    DOC_CHECKLIST = []  # type: ignore
+    DEFAULT_PENALTY_TYPES = []  # type: ignore
+    WAIVER_VERSION = "unavailable"
+
+
+class PenaltyIn(BaseModel):
+    type: str = "سایر"
+    amount: float = 0
+    waivable: bool = True
+
+
+class WaiverCalcRequest(BaseModel):
+    year: int = 1403
+    appeal_stages: int = 0
+    reduce_debt_30: bool = False
+    after_executive_one_month: bool = False
+    pay_type: str = "پرداخت نقدی"
+    art190_80: bool = False
+    art190_40: bool = False
+    is_production_unit: bool = False
+    special_ok: bool = True
+    pay_date: str = ""
+    penalties: list[PenaltyIn] = Field(default_factory=list)
+    taxpayer_name: Optional[str] = None
+    source: Optional[str] = None
+
+
+@app.get("/v1/tax/waiver/meta")
+async def waiver_meta():
+    if calculate_waiver is None:
+        raise HTTPException(status_code=503, detail="taxlaw-engine not installed")
+    circ = CIRCULAR_CONFIG.get("circulars", {}).get(
+        CIRCULAR_CONFIG.get("activeCircularId", ""), {}
+    )
+    return {
+        "waiver_version": WAIVER_VERSION,
+        "circular": circ,
+        "penalty_types": list(DEFAULT_PENALTY_TYPES),
+        "doc_checklist": list(DOC_CHECKLIST),
+        "human_review_required": True,
+    }
+
+
+@app.post("/v1/tax/waiver/calculate")
+async def waiver_calculate(body: WaiverCalcRequest):
+    if calculate_waiver is None:
+        raise HTTPException(status_code=503, detail="taxlaw-engine not installed")
+    pay_type = (
+        body.pay_type
+        if body.pay_type in ("پرداخت نقدی", "ترتیب پرداخت")
+        else "پرداخت نقدی"
+    )
+    inp = WaiverInput(
+        year=body.year,
+        appeal_stages=body.appeal_stages,
+        reduce_debt_30=body.reduce_debt_30,
+        after_executive_one_month=body.after_executive_one_month,
+        pay_type=pay_type,  # type: ignore
+        art190_80=body.art190_80,
+        art190_40=body.art190_40,
+        is_production_unit=body.is_production_unit,
+        special_ok=body.special_ok,
+        pay_date=body.pay_date or "",
+        penalties=[
+            PenaltyRow(type=p.type, amount=p.amount, waivable=p.waivable)
+            for p in body.penalties
+        ],
+    )
+    result = calculate_waiver(inp)
+    out = result.to_dict() if hasattr(result, "to_dict") else result
+    if not isinstance(out, dict):
+        out = {"result": out}
+    out["taxpayer_name"] = body.taxpayer_name
+    out["source"] = body.source
+    out["human_review_required"] = True
+
+    import json
+    from datetime import datetime, timezone
+
+    log_path = ROOT / "data" / "waiver_calculations.jsonl"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_id = f"wav-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    log_rec = {
+        "id": log_id,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "status": "pending_human_review",
+        "inputs": body.model_dump(),
+        "outputs": {k: out[k] for k in out if k not in ("disclaimer",)},
+    }
+    with log_path.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(log_rec, ensure_ascii=False) + "\n")
+    out["log_id"] = log_id
+    return out
+
+
+@app.get("/v1/tax/waiver/logs")
+async def waiver_logs(limit: int = 50):
+    import json
+
+    log_path = ROOT / "data" / "waiver_calculations.jsonl"
+    if not log_path.exists():
+        return {"items": [], "count": 0}
+    lines = log_path.read_text(encoding="utf-8").strip().splitlines()
+    items = []
+    for line in lines[-max(1, min(limit, 200)) :]:
+        try:
+            items.append(json.loads(line))
+        except Exception:
+            continue
+    items.reverse()
+    return {"items": items, "count": len(items)}
+
+
+@app.get("/v1/tax/waiver/smoke")
+async def waiver_smoke():
+    if run_smoke_tests is None:
+        raise HTTPException(status_code=503, detail="taxlaw-engine not installed")
+    return {"tests": run_smoke_tests()}
+
+
+class RAGRequest(BaseModel):
+    query: str = Field(..., min_length=2, max_length=4000)
+    top_k: int = Field(default=5, ge=1, le=15)
+
+
+def _hits_to_citations(hits: list[dict]) -> list[dict]:
+    out = []
+    for h in hits:
+        out.append(
+            {
+                "source_id": str(h.get("source_id") or h.get("chunk_id") or "unknown"),
+                "title": str(h.get("title") or h.get("source_id") or "منبع"),
+                "score": float(h.get("score") or 0),
+                "page": h.get("page"),
+                "snippet": (h.get("text") or "")[:280],
+            }
+        )
+    return out
+
+
+def _extractive_answer(query: str, hits: list[dict]) -> str:
+    if not hits:
+        return (
+            "در دانش ایندکس‌شده موردی یافت نشد. "
+            "لطفاً scripts/seed_knowledge.py را اجرا کنید. "
+            "برای پرونده خاص با مشاور رسمی تماس بگیرید."
+        )
+    parts = [
+        f"بر اساس {len(hits)} قطعه دانش بازیابی‌شده (پاسخ استخراجی — بدون LLM):",
+        "",
+    ]
+    for i, h in enumerate(hits[:5], 1):
+        title = h.get("title") or h.get("source_id") or "منبع"
+        text = (h.get("text") or "").strip().replace("\n", " ")
+        parts.append(f"{i}. [{title}] {text[:420]}")
+        parts.append("")
+    parts.append("— HUMAN_REVIEW_REQUIRED")
+    return "\n".join(parts)
+
+
+@app.get("/v1/knowledge/status")
+async def knowledge_status():
+    ks = get_knowledge()
+    path = os.environ.get("VECTOR_DB_PATH", "")
+    return {
+        "ready": ks is not None and ks.count() > 0,
+        "chunks": ks.count() if ks else 0,
+        "vector_db_path": path,
+        "embedding_provider": os.getenv("EMBEDDING_PROVIDER", "fallback"),
+    }
+
+
+@app.post("/v1/rag/query")
+async def rag_query(body: RAGRequest):
+    ks = get_knowledge()
+    hits: list[dict] = []
+    if ks is not None:
+        try:
+            hits = ks.query(body.query, top_k=body.top_k) or []
+        except Exception:
+            hits = []
+
+    citations = _hits_to_citations(hits)
+    model_name = "extractive"
+    latency_ms = 0
+    answer = _extractive_answer(body.query, hits)
+
+    gw = get_gateway()
+    provider = os.getenv("LLM_PROVIDER", "").lower()
+    if gw is not None and hits and provider in ("ollama", "openai", "openrouter", "gemini"):
+        ctx = "\n\n".join(
+            f"[{i}] {h.get('title', '')}\n{(h.get('text') or '')[:900]}"
+            for i, h in enumerate(hits, 1)
+        )
+        user = f"شواهد:\n{ctx}\n\nپرسش کاربر:\n{body.query}"
+        try:
+            text, model_name, latency_ms = await gw.generate(
+                SYSTEM_TAX, user, temperature=0.25, max_tokens=1200
+            )
+            answer = text
+        except Exception as e:
+            answer = (
+                _extractive_answer(body.query, hits)
+                + f"\n\n(توجه: LLM در دسترس نبود — {type(e).__name__})"
+            )
+            model_name = "extractive-fallback"
+
+    # Evidence Gate (ADR-009): never emit sentinel / fake citations
+    FAKE_IDS = {
+        "pending-index",
+        "general-knowledge",
+        "knowledge-base-not-indexed",
+        "internal-knowledge",
+        "unknown",
+    }
+    citations = [
+        c
+        for c in citations
+        if (c.get("source_id") or "") not in FAKE_IDS
+        and (c.get("source_id") or c.get("title"))
+    ]
+
+    status = "OK"
+    if not citations:
+        status = "INSUFFICIENT_DATA"
+        answer = (
+            "در حال حاضر منبع رسمی قابل‌استناد برای این پرسش در دسترس نیست. "
+            "لطفاً بعداً تلاش کنید یا با مشاور رسمی (۰۹۱۵۳۰۶۸۳۲۲) تماس بگیرید."
+        )
+        model_name = "none"
+
+    return {
+        "answer": answer,
+        "citations": citations,
+        "model": model_name,
+        "latency_ms": latency_ms,
+        "human_review_required": True,
+        "status": status,
+    }
+
+
+ADVISOR_STORE = ROOT / "data" / "advisor_requests.jsonl"
+
+
+class AdvisorRequestIn(BaseModel):
+    full_name: str = Field(..., min_length=2, max_length=120)
+    mobile: str = Field(..., min_length=10, max_length=20)
+    city: str = Field(default="", max_length=80)
+    topic: str = Field(default="مشاوره عمومی", max_length=200)
+    details: str = Field(default="", max_length=4000)
+    preferred_time: str = Field(default="", max_length=120)
+    role: str = Field(default="مودی", max_length=80)
+    professional_title: str = Field(default="", max_length=120)
+    license_number: str = Field(default="", max_length=80)
+    document_type: str = Field(default="", max_length=120)
+    document_reference: str = Field(default="", max_length=120)
+    organization: str = Field(default="", max_length=160)
+    credentials_submitted: bool = False
+
+
+@app.post("/v1/advisors/request")
+async def advisor_request(body: AdvisorRequestIn):
+    import json
+    from datetime import datetime, timezone
+
+    ADVISOR_STORE.parent.mkdir(parents=True, exist_ok=True)
+    rec = {
+        "id": f"adv-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "status": "new",
+        "human_review_required": True,
+        **body.model_dump(),
+    }
+    if body.credentials_submitted:
+        rec["verification_status"] = "pending_verification"
+        rec["status"] = "pending_credential_review"
+    with ADVISOR_STORE.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    vstatus = "pending_verification" if body.credentials_submitted else "n/a"
+    return {
+        "ok": True,
+        "id": rec["id"],
+        "message": (
+            "مدارک برای اعتبارسنجی انسانی ثبت شد."
+            if body.credentials_submitted
+            else "درخواست مشاوره ثبت شد."
+        ),
+        "verification_status": vstatus,
+    }
+
+
+@app.get("/v1/advisors/requests")
+async def list_advisor_requests(limit: int = 50):
+    import json
+
+    if not ADVISOR_STORE.exists():
+        return {"items": [], "count": 0}
+    lines = ADVISOR_STORE.read_text(encoding="utf-8").strip().splitlines()
+    items = []
+    for line in lines[-max(1, min(limit, 200)) :]:
+        try:
+            items.append(json.loads(line))
+        except Exception:
+            continue
+    items.reverse()
+    return {"items": items, "count": len(items)}
+
+
+CAREERS_STORE = ROOT / "data" / "career_applications.jsonl"
+
+
+class CareerApplyIn(BaseModel):
+    full_name: str = Field(..., min_length=2, max_length=120)
+    mobile: str = Field(..., min_length=10, max_length=20)
+    email: str = Field(default="", max_length=120)
+    city: str = Field(default="", max_length=80)
+    desired_role: str = Field(..., max_length=120)
+    experience_years: float = 0
+    education: str = Field(default="", max_length=200)
+    resume_summary: str = Field(..., min_length=10, max_length=8000)
+    availability: str = Field(default="تمام‌وقت", max_length=40)
+
+
+@app.post("/v1/careers/apply")
+async def careers_apply(body: CareerApplyIn):
+    import json
+    from datetime import datetime, timezone
+
+    CAREERS_STORE.parent.mkdir(parents=True, exist_ok=True)
+    rec = {
+        "id": f"job-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "status": "new",
+        "human_review_required": True,
+        **body.model_dump(),
+    }
+    with CAREERS_STORE.open("a", encoding="utf-8") as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    return {"ok": True, "id": rec["id"], "message": "درخواست استخدام ثبت شد."}
+
+
+@app.get("/v1/careers/applications")
+async def list_career_applications(limit: int = 50):
+    import json
+
+    if not CAREERS_STORE.exists():
+        return {"items": [], "count": 0}
+    lines = CAREERS_STORE.read_text(encoding="utf-8").strip().splitlines()
+    items = []
+    for line in lines[-max(1, min(limit, 200)) :]:
+        try:
+            items.append(json.loads(line))
+        except Exception:
+            continue
+    items.reverse()
+    return {"items": items, "count": len(items)}
+
+
+@app.get("/")
+async def root():
+    ks = get_knowledge()
+    return {
+        "service": "MousaviTax API Gateway",
+        "version": "0.5.0",
+        "health": "/health",
+        "docs": "/docs",
+        "knowledge_status": "/v1/knowledge/status",
+        "rag": "POST /v1/rag/query",
+        "triage": "POST /v1/triage",
+        "services_catalog": "GET /v1/services/catalog",
+        "service_request": "POST /v1/services/requests",
+        "cases": "POST /v1/cases",
+        "waiver_calculate": "POST /v1/tax/waiver/calculate",
+        "advisor_request": "POST /v1/advisors/request",
+        "careers_apply": "POST /v1/careers/apply",
+        "knowledge_chunks": ks.count() if ks else 0,
+    }
