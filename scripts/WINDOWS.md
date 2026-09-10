@@ -1,59 +1,17 @@
-# راه‌اندازی روی Windows
+# Windows helpers
 
-## پیش‌نیاز
-- Python 3.12+ در PATH (`python --version`)
-- Node.js 18+ (`node -v`)
-- Git
+See `win-setup.bat`, `win-run-api.bat`, `win-run-web.bat`, `win-run-telegram.bat`.
 
-## یک‌بار
-1. کلون یا `git pull` مخزن
-2. دوبارکلیک یا در CMD:
+Knowledge index (when present):
+- `win-index-knowledge.bat` / `win-index-knowledge.ps1`
+- Runbook: `docs/KNOWLEDGE_INDEX_RUNBOOK.md`
+- Drive folder: `1Jx0cipUqQyGnJk4hFCURzWIg1Abo1Del`
 
-```bat
-cd /d D:\AI\GitHub\mousavitax-platform
-scripts\win-setup.bat
-```
-
-## هر بار اجرا (دو پنجره CMD)
-
-پنجره ۱ — API:
-```bat
-scripts\win-run-api.bat
-```
-
-پنجره ۲ — وب:
-```bat
-scripts\win-run-web.bat
-```
-
-- API: http://localhost:8000/health  
-- وب: http://localhost:3000  
-- بخشودگی: http://localhost:3000/waiver  
-
-## اگر `pip` / `uvicorn` خطای Python313 داد
-همیشه:
-```bat
-python -m pip install ...
-python -m uvicorn ...
-```
-
-## دانش رسمی
-PDFها را در `knowledge\official\` بگذارید، سپس:
-```bat
-call .venv\Scripts\activate.bat
-set EMBEDDING_PROVIDER=fallback
-set VECTOR_DB_PATH=%CD%\data\iran_tax_vectors.json
+```powershell
+cd D:\AI\GitHub\mousavitax-platform
+.\scripts\win-setup.bat
+$env:EMBEDDING_PROVIDER="fallback"
+$env:VECTOR_DB_PATH="$PWD\data\iran_tax_vectors.json"
 python scripts\seed_knowledge.py
-```
-
-
-## خطای Could not import module app.main
-
-علت رایج: قرار گرفتن `packages/document-parser` در PYTHONPATH (بستهٔ داخلی‌اش هم نام `app` دارد).
-
-اسکریپت `win-run-api.bat` اصلاح شده است. پس از `git pull` دوباره اجرا کنید.
-
-بدون reload:
-```bat
-scripts\win-run-api-noreload.bat
+.\scripts\win-run-api.bat
 ```
