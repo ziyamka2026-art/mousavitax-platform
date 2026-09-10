@@ -1,8 +1,70 @@
 {
-  "version": 1,
+  "version": 2,
+  "updated": "2026-09-06",
   "primary_folder_id": "1Jx0cipUqQyGnJk4hFCURzWIg1Abo1Del",
   "fallback_folder_id": "1NcBkZOTemmVfnNKY7FgxuqbIXj6f4Dtl",
   "registry_folder_id": "1LmVU0WnD_-qlzs8Upv2HkpI-dYrUfkqg",
-  "notes": "Put exported PDFs under knowledge/official or run sync_drive_knowledge.py with service account. File IDs can be listed under files[] for gdown.",
-  "files": []
+  "notes": "Folders and priority PDFs discovered from primary Drive (read access). Prefer Service Account sync of whole primary folder; files[] is for targeted gdown when SA is unavailable. Large PDFs may need long seed time.",
+  "folders": [
+    {"id": "19RJ5EmM2J-B7_NrFxnHs7QugLCXCvKoA", "name": "قانون مالیات‌های مستقیم", "priority": 1},
+    {"id": "1OzKvQwFL376le7s5A45Z_Aobdfnp0Tte", "name": "قانون مالیات بر ارزش افزوده 1400", "priority": 2},
+    {"id": "1-WiFYJbarxb8PzJzqXJUrgNOS_e4KR9I", "name": "قانون پایانه‌های فروشگاهی و سامانه مودیان", "priority": 3},
+    {"id": "1uYfb1zoxOCY6bGGh5bQc0QbAxF-nsDMP", "name": "قانون مبارزه با سوداگری", "priority": 4},
+    {"id": "1TUhkv3-sPAPofEbTvSZ7XxrkuGKz_fCd", "name": "قوانین بودجه", "priority": 5},
+    {"id": "1_A_e3ygQ4yuTq7UweXZHjnYEx-nKB72n", "name": "قانون برنامه توسعه", "priority": 6},
+    {"id": "1kDZ47fDGVBh4LRAvshEDom1A6R7Z62XH", "name": "دیوان عدالت اداری", "priority": 7},
+    {"id": "19DChpTlUegvDaqpM4_RlokQFHpIKOUFI", "name": "عناوین دستورالعمل ها", "priority": 8},
+    {"id": "1YfAJflp2VoASgT99RMnQtjBhIlayyY8H", "name": "تسهیل تکالیف مؤدیان (پایانه/سامانه)", "priority": 9},
+    {"id": "1FZA7YIJ-7s_22QiXSZ_kMQsEQB77A54r", "name": "مستندات قابل اتکا در اعتراضات", "priority": 10}
+  ],
+  "files": [
+    {
+      "id": "1eWvFGmUnj80CJCuRyfHSBoYoGvzJR32a",
+      "name": "1401-مجموعه-بخشنامه-های-مالیاتی.pdf",
+      "law_area": "direct-tax-circulars",
+      "priority": 1
+    },
+    {
+      "id": "1jLAxZ880HSFxVgFRRhkWA0Ypt4taj5pf",
+      "name": "مجموعه-بخشنامه-های-مالیاتی-1402.pdf",
+      "law_area": "direct-tax-circulars",
+      "priority": 1
+    },
+    {
+      "id": "1xgYKU-KV21WvnmNd3uw_olI53qesH667",
+      "name": "ابهامات-و-سوالات-پر-تکرار-1404.pdf",
+      "law_area": "faq",
+      "priority": 2
+    },
+    {
+      "id": "12yh2W9ac1wV18bBn62cEFSnp8mwkOLA_",
+      "name": "مقایسه-جرائم-ماده-22-32-38-ارزش-افزوده.pdf",
+      "law_area": "vat-penalties",
+      "priority": 2
+    },
+    {
+      "id": "1XcuRQdSlBW3SWWrhs46LDdFjjn0AIyqc",
+      "name": "دستورالعمل-صدور-صورتحساب-الکترونیک.pdf",
+      "law_area": "einvoicing",
+      "priority": 3
+    },
+    {
+      "id": "19TNTv09pDRDJ6Zy3QT7qxMjfxFKgssiT",
+      "name": "اطلاعیه-قانون-پایانه-های-فروشگاهی.pdf",
+      "law_area": "einvoicing",
+      "priority": 3
+    },
+    {
+      "id": "14iQYRK1_uCbFuGS70IRJGpGNk7xSbMOB",
+      "name": "طرح-مالیات-بر-سوداگری-و-سفته-بازی.pdf",
+      "law_area": "speculation-tax",
+      "priority": 4
+    },
+    {
+      "id": "1LUAMryO7VgPzco1LLTYkyYUdIsiFY_W7",
+      "name": "36552003-1404-12.pdf",
+      "law_area": "misc",
+      "priority": 5
+    }
+  ]
 }
