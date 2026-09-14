@@ -1,0 +1,20 @@
+{
+  "name": "MousaviTax Dev",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": { "version": "3.11" },
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+  "forwardPorts": [3000, 8000],
+  "portsAttributes": {
+    "3000": { "label": "MousaviTax Web", "onAutoForward": "openBrowser" },
+    "8000": { "label": "MousaviTax API", "onAutoForward": "notify" }
+  },
+  "postCreateCommand": "python -m pip install --upgrade pip && python -m pip install -r apps/api/requirements.txt pytest && cd apps/web && npm ci",
+  "postStartCommand": "bash scripts/run_dev.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-python.vscode-pylance", "dbaeumer.vscode-eslint"]
+    }
+  }
+}
