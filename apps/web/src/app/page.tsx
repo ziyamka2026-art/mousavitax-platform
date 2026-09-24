@@ -9,6 +9,13 @@ const services = [
     icon: "٪",
   },
   {
+    title: "نحوه صحیح حسابرسی",
+    desc: "ماده ۲۹ و ۴۱ آیین‌نامه ۲۱۹ + دستورالعمل ۲۰۰/۹۹/۵۲۲ — مقایسه با گزارش حسابرسی",
+    href: "/audit-procedure",
+    tag: "ابزار عملیاتی",
+    icon: "§",
+  },
+  {
     title: "مشاور هوشمند AI",
     desc: "پرسش مالیاتی با RAG و Citation از منابع رسمی",
     href: "/chat",
@@ -48,7 +55,6 @@ const trust = [
 export default function HomePage() {
   return (
     <main>
-      {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 md:grid-cols-2 md:items-center md:py-20">
           <div className="space-y-6">
@@ -60,12 +66,14 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="max-w-xl text-base leading-8 text-slate-300 md:text-lg">
-              ترکیب دانش رسمی، موتور بخشودگی جرائم، و مشاور انسانی — برای مودی،
-              حسابدار و تیم حقوقی که به استناد و نتیجه عملی نیاز دارند.
+              ترکیب دانش رسمی، موتور بخشودگی جرائم، راهنمای حسابرسی ماده ۲۱۹، و مشاور انسانی.
             </p>
             <div className="flex flex-wrap gap-3">
               <Link href="/waiver" className="btn-primary">
                 شروع محاسبه بخشودگی
+              </Link>
+              <Link href="/audit-procedure" className="btn-ghost">
+                نحوه حسابرسی
               </Link>
               <Link href="/chat" className="btn-ghost">
                 پرسش از مشاور AI
@@ -106,7 +114,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Services grid */}
       <section className="mx-auto max-w-6xl px-4 pb-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
@@ -114,7 +121,7 @@ export default function HomePage() {
             <p className="mt-1 text-sm text-slate-400">طراحی‌شده برای تصمیم‌گیری سریع و مستند</p>
           </div>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((s) => (
             <Link key={s.href} href={s.href} className="card group flex flex-col p-5 transition">
               <div className="mb-3 flex items-center justify-between">
@@ -131,18 +138,20 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA band */}
       <section className="mx-auto max-w-6xl px-4 py-10">
         <div className="card flex flex-col items-start justify-between gap-6 bg-gradient-to-l from-blue-950/50 to-slate-900/40 p-8 md:flex-row md:items-center">
           <div>
             <h2 className="text-xl font-bold">آماده بررسی پرونده یا جرائم خود هستید؟</h2>
             <p className="mt-2 max-w-xl text-sm leading-7 text-slate-300">
-              از محاسبه‌گر بخشودگی شروع کنید یا مستقیم با مشاور رسمی هماهنگ شوید.
+              از محاسبه‌گر بخشودگی یا راهنمای حسابرسی شروع کنید یا مستقیم با مشاور رسمی هماهنگ شوید.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/waiver" className="btn-primary">
               محاسبه بخشودگی
+            </Link>
+            <Link href="/audit-procedure" className="btn-ghost">
+              نحوه حسابرسی
             </Link>
             <a href="tel:+989153068322" className="btn-ghost">
               ۰۹۱۵۳۰۶۸۳۲۲
