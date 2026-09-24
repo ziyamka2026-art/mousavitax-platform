@@ -62,6 +62,15 @@ except Exception as e:  # pragma: no cover
 
     logging.getLogger("mousavitax").warning("cases router not loaded: %s", e)
 
+try:
+    from audit_procedure_router import router as audit_proc_router
+
+    app.include_router(audit_proc_router)
+except Exception as e:  # pragma: no cover
+    import logging
+
+    logging.getLogger("mousavitax").warning("audit-procedure router not loaded: %s", e)
+
 _ks: Any = None
 
 
@@ -338,7 +347,6 @@ async def rag_query(body: RAGRequest):
             )
             model_name = "extractive-fallback"
 
-    # Evidence Gate (ADR-009): never emit sentinel / fake citations
     FAKE_IDS = {
         "pending-index",
         "general-knowledge",
@@ -506,5 +514,6 @@ async def root():
         "waiver_calculate": "POST /v1/tax/waiver/calculate",
         "advisor_request": "POST /v1/advisors/request",
         "careers_apply": "POST /v1/careers/apply",
+        "audit_procedure": "POST /v1/tax/audit-procedure/calculate",
         "knowledge_chunks": ks.count() if ks else 0,
     }
