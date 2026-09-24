@@ -11,6 +11,7 @@ export const metadata: Metadata = {
 const nav = [
   { href: "/", label: "خانه" },
   { href: "/waiver", label: "بخشودگی جرائم" },
+  { href: "/audit-procedure", label: "نحوه حسابرسی" },
   { href: "/chat", label: "مشاور AI" },
   { href: "/services", label: "خدمات" },
   { href: "/advisors", label: "ارتباط با مشاورین" },
