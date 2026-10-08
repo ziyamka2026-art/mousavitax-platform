@@ -22,6 +22,7 @@ for sub in (
     "embedding-service/app",
     "retrieval-engine/app",
     "document-parser",
+    "second_brain",
 ):
     p = PACKAGES / sub
     if p.exists() and str(p) not in sys.path:
@@ -70,6 +71,14 @@ except Exception as e:  # pragma: no cover
     import logging
 
     logging.getLogger("mousavitax").warning("audit-procedure router not loaded: %s", e)
+
+# Private Second Brain: owner/personal-bot memory only.
+try:
+    from second_brain.router import router as second_brain_router
+    app.include_router(second_brain_router)
+except Exception as e:  # pragma: no cover
+    import logging
+    logging.getLogger("mousavitax").warning("second-brain router not loaded: %s", e)
 
 _ks: Any = None
 
