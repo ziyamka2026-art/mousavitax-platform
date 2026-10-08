@@ -25,3 +25,9 @@ data/advisor_requests.jsonl
 data/*.jsonl
 data/career_applications.jsonl
 data/waiver_calculations.jsonl
+
+# Private Second Brain (never commit personal memory)
+data/private_second_brain.sqlite3
+data/private_second_brain.sqlite3-*
+**/second_brain.sqlite3
+SECOND_BRAIN_DB_PATH
