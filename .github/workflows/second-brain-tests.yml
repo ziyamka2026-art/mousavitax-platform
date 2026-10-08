@@ -1,0 +1,20 @@
+name: second-brain-tests
+on:
+  push:
+    branches: [main, "feat/second-brain-audit-v1"]
+  pull_request:
+    paths:
+      - "packages/second_brain/**"
+      - "apps/api/app/main.py"
+      - ".github/workflows/second-brain-tests.yml"
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m pip install --upgrade pip
+      - run: pip install pytest fastapi pydantic
+      - run: pytest -q packages/second_brain/tests
