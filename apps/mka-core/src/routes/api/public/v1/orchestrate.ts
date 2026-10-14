@@ -28,7 +28,7 @@ async function safeEqual(a: string, b: string) {
   ]);
   const x = new Uint8Array(ha), y = new Uint8Array(hb);
   let d = 0;
-  for (let i = 0; i < x.length; i++) d |= x[i] ^ y[i];
+  for (let i = 0; i < x.length; i++) d |= (x[i] ?? 0) ^ (y[i] ?? 0);
   return d === 0;
 }
 
