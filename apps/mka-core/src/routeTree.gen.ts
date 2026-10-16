@@ -11,9 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as GuideRouteImport } from './routes/guide'
+import { Route as LawsRouteImport } from './routes/laws'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as TaxHelpRouteImport } from './routes/tax-help'
+import { Route as WaiverRouteImport } from './routes/waiver'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAskRouteImport } from './routes/_authenticated/ask'
 import { Route as AuthenticatedMemoryRouteImport } from './routes/_authenticated/memory'
+import { Route as BooksSourceIdRouteImport } from './routes/books.$sourceId'
+import { Route as CircularsIndexRouteImport } from './routes/circulars.index'
+import { Route as CircularsSourceIdRouteImport } from './routes/circulars.$sourceId'
+import { Route as ApiPublicCronDriveSyncRouteImport } from './routes/api/public/cron/drive-sync'
+import { Route as ApiPublicDriveFileIdRouteImport } from './routes/api/public/drive/$fileId'
 import { Route as ApiPublicV1OrchestrateRouteImport } from './routes/api/public/v1/orchestrate'
 
 const IndexRoute = IndexRouteImport.update({
@@ -25,10 +38,50 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideRoute = GuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LawsRoute = LawsRouteImport.update({
+  id: '/laws',
+  path: '/laws',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TaxHelpRoute = TaxHelpRouteImport.update({
+  id: '/tax-help',
+  path: '/tax-help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WaiverRoute = WaiverRouteImport.update({
+  id: '/waiver',
+  path: '/waiver',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAskRoute = AuthenticatedAskRouteImport.update({
   id: '/ask',
@@ -40,6 +93,31 @@ const AuthenticatedMemoryRoute = AuthenticatedMemoryRouteImport.update({
   path: '/memory',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const BooksSourceIdRoute = BooksSourceIdRouteImport.update({
+  id: '/books/$sourceId',
+  path: '/books/$sourceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CircularsIndexRoute = CircularsIndexRouteImport.update({
+  id: '/circulars/',
+  path: '/circulars/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CircularsSourceIdRoute = CircularsSourceIdRouteImport.update({
+  id: '/circulars/$sourceId',
+  path: '/circulars/$sourceId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicCronDriveSyncRoute = ApiPublicCronDriveSyncRouteImport.update({
+  id: '/api/public/cron/drive-sync',
+  path: '/api/public/cron/drive-sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicDriveFileIdRoute = ApiPublicDriveFileIdRouteImport.update({
+  id: '/api/public/drive/$fileId',
+  path: '/api/public/drive/$fileId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicV1OrchestrateRoute = ApiPublicV1OrchestrateRouteImport.update({
   id: '/api/public/v1/orchestrate',
   path: '/api/public/v1/orchestrate',
@@ -48,46 +126,146 @@ const ApiPublicV1OrchestrateRoute = ApiPublicV1OrchestrateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/faq': typeof FaqRoute
+  '/guide': typeof GuideRoute
+  '/laws': typeof LawsRoute
+  '/search': typeof SearchRoute
+  '/tax-help': typeof TaxHelpRoute
+  '/waiver': typeof WaiverRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/ask': typeof AuthenticatedAskRoute
   '/memory': typeof AuthenticatedMemoryRoute
+  '/books/$sourceId': typeof BooksSourceIdRoute
+  '/circulars/$sourceId': typeof CircularsSourceIdRoute
+  '/circulars/': typeof CircularsIndexRoute
+  '/api/public/cron/drive-sync': typeof ApiPublicCronDriveSyncRoute
+  '/api/public/drive/$fileId': typeof ApiPublicDriveFileIdRoute
   '/api/public/v1/orchestrate': typeof ApiPublicV1OrchestrateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/faq': typeof FaqRoute
+  '/guide': typeof GuideRoute
+  '/laws': typeof LawsRoute
+  '/search': typeof SearchRoute
+  '/tax-help': typeof TaxHelpRoute
+  '/waiver': typeof WaiverRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/ask': typeof AuthenticatedAskRoute
   '/memory': typeof AuthenticatedMemoryRoute
+  '/books/$sourceId': typeof BooksSourceIdRoute
+  '/circulars/$sourceId': typeof CircularsSourceIdRoute
+  '/circulars': typeof CircularsIndexRoute
+  '/api/public/cron/drive-sync': typeof ApiPublicCronDriveSyncRoute
+  '/api/public/drive/$fileId': typeof ApiPublicDriveFileIdRoute
   '/api/public/v1/orchestrate': typeof ApiPublicV1OrchestrateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/about': typeof AboutRoute
   '/auth': typeof AuthRoute
+  '/faq': typeof FaqRoute
+  '/guide': typeof GuideRoute
+  '/laws': typeof LawsRoute
+  '/search': typeof SearchRoute
+  '/tax-help': typeof TaxHelpRoute
+  '/waiver': typeof WaiverRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/ask': typeof AuthenticatedAskRoute
   '/_authenticated/memory': typeof AuthenticatedMemoryRoute
+  '/books/$sourceId': typeof BooksSourceIdRoute
+  '/circulars/$sourceId': typeof CircularsSourceIdRoute
+  '/circulars/': typeof CircularsIndexRoute
+  '/api/public/cron/drive-sync': typeof ApiPublicCronDriveSyncRoute
+  '/api/public/drive/$fileId': typeof ApiPublicDriveFileIdRoute
   '/api/public/v1/orchestrate': typeof ApiPublicV1OrchestrateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/ask' | '/memory' | '/api/public/v1/orchestrate'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/faq'
+    | '/guide'
+    | '/laws'
+    | '/search'
+    | '/tax-help'
+    | '/waiver'
+    | '/admin'
+    | '/ask'
+    | '/memory'
+    | '/books/$sourceId'
+    | '/circulars/$sourceId'
+    | '/circulars/'
+    | '/api/public/cron/drive-sync'
+    | '/api/public/drive/$fileId'
+    | '/api/public/v1/orchestrate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/ask' | '/memory' | '/api/public/v1/orchestrate'
+  to:
+    | '/'
+    | '/about'
+    | '/auth'
+    | '/faq'
+    | '/guide'
+    | '/laws'
+    | '/search'
+    | '/tax-help'
+    | '/waiver'
+    | '/admin'
+    | '/ask'
+    | '/memory'
+    | '/books/$sourceId'
+    | '/circulars/$sourceId'
+    | '/circulars'
+    | '/api/public/cron/drive-sync'
+    | '/api/public/drive/$fileId'
+    | '/api/public/v1/orchestrate'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/about'
     | '/auth'
+    | '/faq'
+    | '/guide'
+    | '/laws'
+    | '/search'
+    | '/tax-help'
+    | '/waiver'
+    | '/_authenticated/admin'
     | '/_authenticated/ask'
     | '/_authenticated/memory'
+    | '/books/$sourceId'
+    | '/circulars/$sourceId'
+    | '/circulars/'
+    | '/api/public/cron/drive-sync'
+    | '/api/public/drive/$fileId'
     | '/api/public/v1/orchestrate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AboutRoute: typeof AboutRoute
   AuthRoute: typeof AuthRoute
+  FaqRoute: typeof FaqRoute
+  GuideRoute: typeof GuideRoute
+  LawsRoute: typeof LawsRoute
+  SearchRoute: typeof SearchRoute
+  TaxHelpRoute: typeof TaxHelpRoute
+  WaiverRoute: typeof WaiverRoute
+  BooksSourceIdRoute: typeof BooksSourceIdRoute
+  CircularsSourceIdRoute: typeof CircularsSourceIdRoute
+  CircularsIndexRoute: typeof CircularsIndexRoute
+  ApiPublicCronDriveSyncRoute: typeof ApiPublicCronDriveSyncRoute
+  ApiPublicDriveFileIdRoute: typeof ApiPublicDriveFileIdRoute
   ApiPublicV1OrchestrateRoute: typeof ApiPublicV1OrchestrateRoute
 }
 
@@ -107,12 +285,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide': {
+      id: '/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof GuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/laws': {
+      id: '/laws'
+      path: '/laws'
+      fullPath: '/laws'
+      preLoaderRoute: typeof LawsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tax-help': {
+      id: '/tax-help'
+      path: '/tax-help'
+      fullPath: '/tax-help'
+      preLoaderRoute: typeof TaxHelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/waiver': {
+      id: '/waiver'
+      path: '/waiver'
+      fullPath: '/waiver'
+      preLoaderRoute: typeof WaiverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/ask': {
       id: '/_authenticated/ask'
@@ -128,6 +362,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMemoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/books/$sourceId': {
+      id: '/books/$sourceId'
+      path: '/books/$sourceId'
+      fullPath: '/books/$sourceId'
+      preLoaderRoute: typeof BooksSourceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/circulars/': {
+      id: '/circulars/'
+      path: '/circulars'
+      fullPath: '/circulars/'
+      preLoaderRoute: typeof CircularsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/circulars/$sourceId': {
+      id: '/circulars/$sourceId'
+      path: '/circulars/$sourceId'
+      fullPath: '/circulars/$sourceId'
+      preLoaderRoute: typeof CircularsSourceIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/cron/drive-sync': {
+      id: '/api/public/cron/drive-sync'
+      path: '/api/public/cron/drive-sync'
+      fullPath: '/api/public/cron/drive-sync'
+      preLoaderRoute: typeof ApiPublicCronDriveSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/drive/$fileId': {
+      id: '/api/public/drive/$fileId'
+      path: '/api/public/drive/$fileId'
+      fullPath: '/api/public/drive/$fileId'
+      preLoaderRoute: typeof ApiPublicDriveFileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/v1/orchestrate': {
       id: '/api/public/v1/orchestrate'
       path: '/api/public/v1/orchestrate'
@@ -139,11 +408,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAskRoute: typeof AuthenticatedAskRoute
   AuthenticatedMemoryRoute: typeof AuthenticatedMemoryRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAskRoute: AuthenticatedAskRoute,
   AuthenticatedMemoryRoute: AuthenticatedMemoryRoute,
 }
@@ -154,7 +425,19 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AboutRoute: AboutRoute,
   AuthRoute: AuthRoute,
+  FaqRoute: FaqRoute,
+  GuideRoute: GuideRoute,
+  LawsRoute: LawsRoute,
+  SearchRoute: SearchRoute,
+  TaxHelpRoute: TaxHelpRoute,
+  WaiverRoute: WaiverRoute,
+  BooksSourceIdRoute: BooksSourceIdRoute,
+  CircularsSourceIdRoute: CircularsSourceIdRoute,
+  CircularsIndexRoute: CircularsIndexRoute,
+  ApiPublicCronDriveSyncRoute: ApiPublicCronDriveSyncRoute,
+  ApiPublicDriveFileIdRoute: ApiPublicDriveFileIdRoute,
   ApiPublicV1OrchestrateRoute: ApiPublicV1OrchestrateRoute,
 }
 export const routeTree = rootRouteImport

@@ -34,3 +34,19 @@ services:
       api:
         condition: service_healthy
     restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    environment:
+      - POSTGRES_DB=mousavitax
+      - POSTGRES_USER=mousavitax
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-change-me}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres:/docker-entrypoint-initdb.d:ro
+    restart: unless-stopped
+
+volumes:
+  pgdata:

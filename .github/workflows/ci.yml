@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  build-web:
+    name: Build mka-core
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/mka-core
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - run: bun install --frozen-lockfile || bun install
+      - run: bun run build
+
+  validate-migrations:
+    name: Validate database migrations
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: ci
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U ci"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGHOST: localhost
+      PGUSER: ci
+      PGPASSWORD: ci
+      PGDATABASE: ci
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply migrations in order (fail on first error)
+        run: |
+          shopt -s nullglob
+          files=(infra/postgres/*.sql)
+          if [ ${#files[@]} -eq 0 ]; then echo "No migrations found"; exit 1; fi
+          for f in "${files[@]}"; do
+            echo "::group::Applying $f"
+            psql -v ON_ERROR_STOP=1 --single-transaction -f "$f"
+            echo "::endgroup::"
+          done
+      - name: Check expected tables exist
+        run: |
+          for t in tax_cases legal_workflows workflow_events workflow_artifacts workflow_gates; do
+            psql -tAc "select to_regclass('public.$t')" | grep -q "$t" || { echo "Missing table: $t"; exit 1; }
+          done
+
+  python-tests:
+    name: Python tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - run: pytest -q tests
