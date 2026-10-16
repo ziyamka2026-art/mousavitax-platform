@@ -11,8 +11,15 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-ROOT = Path(__file__).resolve().parents[3]
-PACKAGES = ROOT / "packages"
+_file_path = Path(__file__).resolve()
+_local_root = _file_path.parents[3] if len(_file_path.parents) > 3 else None
+if _local_root is not None and (_local_root / "packages").is_dir():
+    ROOT = _local_root
+    PACKAGES = ROOT / "packages"
+else:
+    # Dockerfile copies the application to /app/app and packages to /packages.
+    ROOT = Path("/app")
+    PACKAGES = Path("/packages")
 API_APP = Path(__file__).resolve().parent
 for _path in (PACKAGES, API_APP):
     if str(_path) not in sys.path:
