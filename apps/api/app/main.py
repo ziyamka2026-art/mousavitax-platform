@@ -13,6 +13,10 @@ from pydantic import BaseModel, Field
 
 ROOT = Path(__file__).resolve().parents[3]
 PACKAGES = ROOT / "packages"
+API_APP = Path(__file__).resolve().parent
+for _path in (PACKAGES, API_APP):
+    if str(_path) not in sys.path:
+        sys.path.insert(0, str(_path))
 for sub in (
     "shared",
     "ai-gateway/app",
