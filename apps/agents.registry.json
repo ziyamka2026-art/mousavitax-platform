@@ -1,0 +1,27 @@
+{
+  "host": "apps/law-library",
+  "workflow": "docs/agent-workflow/workflow.json",
+  "contract": "packages/shared-contracts/orchestrator.schema.json",
+  "supervision": {"owner": "human-supervisor", "final_approval_required": true, "direct_external_actions": false},
+  "source_repositories": [
+    {"name": "remix-of", "url": "https://github.com/taxmsvj-cmyk/remix-of", "role": "product-shell"},
+    {"name": "MKA-Core", "url": "https://github.com/ziyamka2026-art/MKA-Core", "role": "case-and-memory-ui"},
+    {"name": "mka-core-engine", "url": "https://github.com/ziyamka2026-art/mka-core-engine", "role": "brain-and-rag-ui"},
+    {"name": "mka-law-library", "url": "https://github.com/taxmsvj-cmyk/mka-law-library", "role": "law-library"}
+  ],
+  "agents": [
+    {"id":"case-intake","module":"packages/agent-core/legal_workflow.py","role":"پذیرش، تفکیک و رفع ابهام پرونده"},
+    {"id":"document-forensics","module":"packages/agent-core/legal_workflow.py","role":"خواندن اصل سند، OCR و استخراج ادله"},
+    {"id":"drive-research","module":"packages/agent-core/legal_workflow.py","role":"پژوهش اولویت‌دار در مخزن قوانین Drive"},
+    {"id":"timeline-agent","module":"packages/agent-core/legal_workflow.py","role":"تحلیل زمان اجرای قوانین"},
+    {"id":"legal-issues","module":"packages/agent-core/legal_workflow.py","role":"تحلیل ایرادات شکلی و ماهوی"},
+    {"id":"accounting-check","module":"packages/agent-core/legal_workflow.py","role":"بازمحاسبه و کنترل حسابداری"},
+    {"id":"penalty-procedure","module":"packages/agent-core/legal_workflow.py","role":"بررسی جرائم و تشریفات"},
+    {"id":"defense-strategy","module":"packages/agent-core/legal_workflow.py","role":"طراحی دفاع چندلایه"},
+    {"id":"drafting-agent","module":"packages/agent-core/legal_workflow.py","role":"تنظیم پیش‌نویس مستند"},
+    {"id":"citation-verifier","module":"packages/agent-core/legal_workflow.py","role":"کنترل استنادات"},
+    {"id":"contradiction-reviewer","module":"packages/agent-core/legal_workflow.py","role":"کنترل تناقض و محرمانگی"},
+    {"id":"quality-gate","module":"packages/agent-core/legal_workflow.py","role":"دروازه کیفیت نهایی"}
+  ],
+  "rules": ["case isolation", "evidence first", "official sources first", "audit every transition", "no final pleading without human approval"]
+}

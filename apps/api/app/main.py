@@ -54,6 +54,12 @@ app.add_middleware(
 
 # Cases / services / triage
 try:
+    from agent_routes import build_agent_router
+    app.include_router(build_agent_router())
+except Exception as e:  # pragma: no cover
+    import logging
+    logging.getLogger("mousavitax").warning("agent routes not loaded: %s", e)
+try:
     from cases import router as cases_router
 
     app.include_router(cases_router)

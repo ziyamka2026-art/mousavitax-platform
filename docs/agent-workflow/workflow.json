@@ -1,0 +1,17 @@
+{
+  "id": "iran-tax-appeal-supervised-loop",
+  "version": "1.0.0",
+  "owner": "human-supervisor",
+  "source_repositories": [
+    {"name": "remix-of", "url": "https://github.com/taxmsvj-cmyk/remix-of", "role": "product-shell"},
+    {"name": "MKA-Core", "url": "https://github.com/ziyamka2026-art/MKA-Core", "role": "case-and-memory-ui"},
+    {"name": "mka-core-engine", "url": "https://github.com/ziyamka2026-art/mka-core-engine", "role": "brain-and-rag-ui"},
+    {"name": "mka-law-library", "url": "https://github.com/taxmsvj-cmyk/mka-law-library", "role": "law-library"}
+  ],
+  "execution": {
+    "parallel": ["timeline-agent", "legal-issues", "accounting-check", "penalty-procedure"],
+    "blocking_gates": ["CLARIFICATION", "EVIDENCE", "CITATION", "CONTRADICTION", "FINAL_HUMAN_REVIEW"],
+    "final_action": "human_supervisor_approval_then_delivery"
+  },
+  "privacy": {"case_isolation": true, "direct_database_access": false, "audit_required": true, "permanent_delete": false}
+}
