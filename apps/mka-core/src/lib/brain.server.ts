@@ -73,24 +73,37 @@ export async function linkMemory(db: Db, userId: string, memoryId: string, ex: E
 }
 
 /** MKA-Core orchestrate: answer only from stored knowledge, with citations. */
-export async function orchestrate(db: Db, question: string): Promise<OrchestrateResponse> {
+export async function orchestrate(
+  db: Db,
+  question: string,
+  options: { scope?: "official" | "personal" } = {},
+): Promise<OrchestrateResponse> {
+  const scope = options.scope ?? "personal";
   const trace_id = crypto.randomUUID();
   const q = question.trim();
   if (q.length < 4) {
     return { status: "CLARIFICATION_REQUIRED", answer: "لطفاً پرسش را کامل‌تر بنویسید.", citations: [], actions: [], trace_id };
   }
-  const { data, error } = await db.rpc("search_knowledge", { q: toQuery(q), lim: 6 });
+  // The public service endpoint deliberately searches more broadly, then applies
+  // an explicit source allowlist before any content reaches the model.
+  const { data, error } = await db.rpc("search_knowledge", {
+    q: toQuery(q),
+    lim: scope === "official" ? 24 : 6,
+  });
   if (error) {
     console.error(error);
     return { status: "ERROR", answer: "جست‌وجو انجام نشد.", citations: [], actions: [], trace_id };
   }
-  const rows = data ?? [];
+  const retrieved = data ?? [];
+  const rows = (scope === "official" ? retrieved.filter((r) => r.kind === "circular") : retrieved).slice(0, 6);
   if (!rows.length) {
     return {
       status: "INSUFFICIENT_DATA",
-      answer: "در حافظه و کتابخانه مطلبی مرتبط با این پرسش پیدا نشد.",
+      answer: scope === "official"
+        ? "در منابع رسمیِ در دسترس، منبع مرتبطی برای این پرسش پیدا نشد."
+        : "در حافظه و کتابخانه مطلبی مرتبط با این پرسش پیدا نشد.",
       citations: [],
-      actions: [{ type: "ingest", label: "افزودن سند مرتبط به حافظه" }],
+      actions: scope === "personal" ? [{ type: "ingest", label: "افزودن سند مرتبط به حافظه" }] : [],
       trace_id,
     };
   }
