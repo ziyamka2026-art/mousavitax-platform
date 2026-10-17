@@ -63,6 +63,7 @@ export const listMemory = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("memory_items")
       .select("id,title,source_type,source_ref,summary,reasoning,key_points,articles,created_at,memory_links(target_type,target_ref)")
+      .eq("user_id", context.userId)
       .order("created_at", { ascending: false })
       .limit(100);
     if (error) throw new Error(error.message);
@@ -73,7 +74,11 @@ export const deleteMemory = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("memory_items").delete().eq("id", data.id);
+    const { error } = await context.supabase
+      .from("memory_items")
+      .delete()
+      .eq("id", data.id)
+      .eq("user_id", context.userId);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -85,8 +90,10 @@ export const askBrain = createServerFn({ method: "POST" })
     const { orchestrate } = await import("./brain.server");
     try {
       return await orchestrate(context.supabase, data.question);
-    } catch (e: any) {
-      return { status: "ERROR" as const, answer: e?.message ?? "خطا", citations: [], actions: [], trace_id: crypto.randomUUID() };
+    } catch (e: unknown) {
+      const trace_id = crypto.randomUUID();
+      console.error("askBrain failed", { trace_id, error: e });
+      return { status: "ERROR" as const, answer: "در پردازش پرسش خطا رخ داد.", citations: [], actions: [], trace_id };
     }
   });
 
