@@ -14,6 +14,13 @@ Hybrid: **AI Triage → RAG/APCS + Citation → Human-in-the-loop** · **Tax Cas
 | [docs/adr/ADR-007-Hybrid-AI-Tax-Platform.md](docs/adr/ADR-007-Hybrid-AI-Tax-Platform.md) | تصمیم معماری |
 | [docs/ops/](docs/ops/) | دستورالعمل فارسی ماژول‌ها |
 
+## گردش‌کار پرونده و لایحه
+
+- [اسکیل مشاوره حقوقی ایران](skills/iran-legal-counsel/SKILL.md)
+- [راهنمای اتصال و همگام‌سازی پرونده با Google Drive](docs/ops/CASE_DRIVE_SYNC_FA.md)
+- API: `POST /v1/cases/{case_id}/drive/sync`
+- وضعیت: `GET /v1/cases/{case_id}/drive/status`
+
 ## ساختار
 ```text
 apps/api web telegram-bot bale-bot admin
