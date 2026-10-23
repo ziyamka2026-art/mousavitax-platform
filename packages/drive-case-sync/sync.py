@@ -5,6 +5,7 @@ import io
 import json
 import os
 import re
+import socket
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
@@ -21,6 +22,9 @@ GOOGLE_EXPORTS = {
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx"
     ),
 }
+DEFAULT_HTTP_TIMEOUT_SECONDS = 30
+DEFAULT_MAX_DEPTH = 20
+DEFAULT_MAX_FILES = 10000
 
 
 class DriveSyncError(RuntimeError):
@@ -85,6 +89,8 @@ def _get_service(service_account_json: str | None) -> Any:
     try:
         from google.oauth2 import service_account  # type: ignore
         from googleapiclient.discovery import build  # type: ignore
+        import google_auth_httplib2  # type: ignore
+        import httplib2  # type: ignore
     except ImportError as exc:
         raise DriveSyncError(
             "Google Drive dependencies are missing. Install "
@@ -99,31 +105,73 @@ def _get_service(service_account_json: str | None) -> Any:
     creds = service_account.Credentials.from_service_account_file(
         str(path), scopes=["https://www.googleapis.com/auth/drive.readonly"]
     )
-    return build("drive", "v3", credentials=creds, cache_discovery=False)
+    http = google_auth_httplib2.AuthorizedHttp(
+        creds, http=httplib2.Http(timeout=DEFAULT_HTTP_TIMEOUT_SECONDS)
+    )
+    return build("drive", "v3", http=http, cache_discovery=False)
 
 
-def _iter_files(service: Any, folder_id: str, prefix: str = "") -> list[dict[str, Any]]:
+def _iter_files(
+    service: Any,
+    folder_id: str,
+    prefix: str = "",
+    *,
+    depth: int = 0,
+    visited: set[str] | None = None,
+    max_depth: int = DEFAULT_MAX_DEPTH,
+    max_files: int = DEFAULT_MAX_FILES,
+) -> list[dict[str, Any]]:
+    if depth > max_depth:
+        raise DriveSyncError(
+            f"Drive folder depth exceeded {max_depth}; use a narrower case folder"
+        )
+    visited = visited if visited is not None else set()
+    if folder_id in visited:
+        return []
+    visited.add(folder_id)
     q = f"'{folder_id}' in parents and trashed = false"
     result: list[dict[str, Any]] = []
     token: str | None = None
     while True:
-        response = service.files().list(
-            q=q,
-            spaces="drive",
-            fields="nextPageToken,files(id,name,mimeType,size,md5Checksum,modifiedTime,webViewLink)",
-            pageToken=token,
-            pageSize=100,
-            orderBy="name",
-            supportsAllDrives=True,
-            includeItemsFromAllDrives=True,
-        ).execute()
+        try:
+            response = service.files().list(
+                q=q,
+                spaces="drive",
+                fields="nextPageToken,files(id,name,mimeType,size,md5Checksum,modifiedTime,webViewLink)",
+                pageToken=token,
+                pageSize=100,
+                orderBy="name",
+                supportsAllDrives=True,
+                includeItemsFromAllDrives=True,
+            ).execute(num_retries=2)
+        except (socket.timeout, TimeoutError) as exc:
+            raise DriveSyncError(
+                f"Google Drive listing timed out after {DEFAULT_HTTP_TIMEOUT_SECONDS}s; "
+                "retry with a narrower case folder"
+            ) from exc
+        except Exception as exc:
+            raise DriveSyncError(f"Google Drive listing failed: {exc}") from exc
         for item in response.get("files", []):
             item = dict(item)
             item["relative_path"] = f"{prefix}{item['name']}"
             if item.get("mimeType") == GOOGLE_FOLDER:
-                result.extend(_iter_files(service, item["id"], prefix=f"{prefix}{item['name']}/"))
+                result.extend(
+                    _iter_files(
+                        service,
+                        item["id"],
+                        prefix=f"{prefix}{item['name']}/",
+                        depth=depth + 1,
+                        visited=visited,
+                        max_depth=max_depth,
+                        max_files=max_files,
+                    )
+                )
             else:
                 result.append(item)
+            if len(result) > max_files:
+                raise DriveSyncError(
+                    f"Drive file limit exceeded ({max_files}); use a narrower case folder"
+                )
         token = response.get("nextPageToken")
         if not token:
             return result
