@@ -288,24 +288,17 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 ### ۳. اجرای migrations
 
-به ترتیب این فایل‌ها را در SQL Editor اجرا کنید:
+به ترتیب (۰۰۰ تا ۰۰۵) در SQL Editor سوپابیس اجرا کنید، یا با یک دستور:
 
 ```bash
-for f in infra/postgres/migrations/001_tenants.sql \
-         infra/postgres/migrations/002_audit_logs.sql \
-         infra/postgres/migrations/003_knowledge_documents.sql \
-         infra/postgres/migrations/004_add_tenant_rls.sql; do
-  echo "Running $f..."
-done
+DATABASE_URL='postgresql://...' bash scripts/apply-migrations.sh
 ```
 
-یا با psql:
-```bash
-psql "$DATABASE_URL" -f infra/postgres/migrations/001_tenants.sql
-psql "$DATABASE_URL" -f infra/postgres/migrations/002_audit_logs.sql
-psql "$DATABASE_URL" -f infra/postgres/migrations/003_knowledge_documents.sql
-psql "$DATABASE_URL" -f infra/postgres/migrations/004_add_tenant_rls.sql
-```
+ترتیب فایل‌ها: `000_legal_workflow`، `001_tenants`، `002_audit_logs`، `003_knowledge_documents`، `004_add_tenant_rls`، `005_registry_documents`.
+
+> فایل ۰۰۰ جدول‌های `tax_cases` و workflow را می‌سازد که ۰۰۴ به آن‌ها نیاز دارد.
+
+اجرای محلی کل پلتفرم (API + وب) با یک دستور: `bash scripts/start-local.sh`
 
 ### ۴. گرفتن API credentials
 
