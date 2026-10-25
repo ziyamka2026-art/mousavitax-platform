@@ -1,0 +1,67 @@
+# MousaviTax AI Platform — License Agreement
+
+© 2026 MousaviTax / ARYA Holding. All rights reserved.
+
+## 1. Grant of License
+
+Subject to the terms and conditions of this Agreement, MousaviTax / ARYA Holding
+("Licensor") grants you ("Licensee") a non-exclusive, non-transferable,
+non-sublicensable, revocable license to:
+
+- (a) Use the software for internal evaluation and non-commercial purposes;
+- (b) Modify the software for your own internal use;
+- (c) Submit contributions via Pull Requests (which, if accepted, become the
+  property of Licensor under this Agreement).
+
+## 2. Restrictions
+
+You may NOT, without prior written consent from the Licensor:
+
+- (a) Use the software for any commercial purpose;
+- (b) Distribute, sublicense, lease, rent, or lend the software;
+- (c) Remove or alter any copyright, trademark, or attribution notices;
+- (d) Use the trademarks "MousaviTax", "MKA", "ARYA Holding" or any
+  confusingly similar mark;
+- (e) Reverse engineer, decompile, or disassemble any portion of the
+  software except to the extent required by applicable law.
+
+## 3. Tax Domain Specific Disclaimer
+
+The software provides AI-assisted information regarding Iranian tax law.
+This information is for general guidance only and does NOT constitute
+legal, accounting, or tax advice. The Licensee is solely responsible
+for verifying all information with a licensed Iranian tax advisor
+(مشاور رسمی مالیاتی) before taking any action based on the software's
+output.
+
+## 4. Intellectual Property
+
+All intellectual property rights in and to the software, including
+improvements, modifications, and derivative works, shall remain the
+exclusive property of the Licensor.
+
+## 5. Termination
+
+This Agreement terminates automatically if Licensee breaches any term.
+Upon termination, Licensee must cease all use of the software and
+destroy all copies in their possession.
+
+## 6. Disclaimer of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+## 7. Limitation of Liability
+
+IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## 8. Governing Law
+
+This Agreement shall be governed by the laws of the Islamic Republic of Iran.
+
+## 9. Contact
+
+For licensing inquiries: `ziya.mka2026@gmail.com`
