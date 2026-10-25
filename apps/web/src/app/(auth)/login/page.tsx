@@ -39,7 +39,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+    <div className="min-h-screen flex items-center justify-center  px-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">ورود به موصوی‌تکس</CardTitle>
@@ -49,7 +49,7 @@ export default function LoginPage() {
         <form onSubmit={handleLogin}>
           <CardContent className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md">
+              <div className="bg-red-500/10 text-red-400 text-sm p-3 rounded-md">
                 {error}
               </div>
             )}
@@ -86,7 +86,7 @@ export default function LoginPage() {
               {loading ? "در حال ورود..." : "ورود"}
             </Button>
 
-            <p className="text-sm text-center text-gray-600">
+            <p className="text-sm text-center text-slate-400">
               حساب کاربری ندارید؟{" "}
               <Link href="/register" className="text-blue-600 hover:underline">
                 ثبت‌نام کنید
