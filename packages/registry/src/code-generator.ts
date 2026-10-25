@@ -139,11 +139,11 @@ export function inferTypeFromFilename(name: string): DocumentType {
   if (lower.includes('اعتراض') || lower.includes('لایحه') || lower.includes('appeal')) {
     return 'appeal';
   }
-  if (lower.includes('پرونده') || lower.includes('مالیات') || lower.includes('tax')) {
-    return 'tax_case';
-  }
   if (lower.includes('قانون') || lower.includes('law') || lower.includes('ماده')) {
     return 'law';
+  }
+  if (lower.includes('پرونده') || lower.includes('مالیات') || lower.includes('tax')) {
+    return 'tax_case';
   }
   return 'general';
 }

@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, "packages/agent-core")
+sys.path.insert(0, "packages/agent_core")
 from agent_core.legal_workflow import Gate, LegalAppealWorkflow, WorkflowError, WorkflowStatus
 
 

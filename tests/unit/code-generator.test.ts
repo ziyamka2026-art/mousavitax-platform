@@ -9,7 +9,6 @@ import {
   extractTypeFromCode,
   extractSeqFromCode,
   getTypeLabel,
-  type DocumentType,
 } from '../../packages/registry/src';
 
 describe('Document Code Generator', () => {

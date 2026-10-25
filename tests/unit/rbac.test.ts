@@ -43,7 +43,7 @@ describe('RBAC', () => {
 
   describe('requirePermission', () => {
     it('throws AuthorizationError when permission missing', () => {
-      expect(() => requirePermission(user('taxpayer'), 'admin:config'))
+      expect(() => requirePermission(user('taxpayer'), 'system:admin'))
         .toThrow(AuthorizationError);
     });
 

@@ -5,10 +5,10 @@
  * with RLS policies preventing UPDATE and DELETE.
  *
  * @package packages/audit
- * @see infra/postgres/migrations/005_audit_logs.sql
+ * @see infra/postgres/migrations/002_audit_logs.sql
  */
 
-import type { UserContext } from '../auth/src/rbac';
+import type { UserContext } from '../../auth/src/rbac';
 
 export type AuditAction =
   | 'auth.login'
@@ -126,7 +126,7 @@ export class SupabaseAuditSink implements AuditSink {
   }
 }
 
-function enrichEvent(event: AuditEvent): Required<AuditEvent> {
+export function enrichEvent(event: AuditEvent): Required<AuditEvent> {
   return {
     ...event,
     timestamp: event.timestamp ?? new Date().toISOString(),

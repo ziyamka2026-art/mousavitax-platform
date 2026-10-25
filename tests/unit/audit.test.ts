@@ -1,7 +1,7 @@
-"""
-Vitest sample test for Audit Logger.
-Verifies the ConsoleAuditSink writes correctly.
-"""
+/**
+ * Vitest sample test for Audit Logger.
+ * Verifies the ConsoleAuditSink writes correctly.
+ */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ConsoleAuditSink, enrichEvent, type AuditEvent } from '../../packages/audit/src/logger';
 
@@ -46,7 +46,7 @@ describe('Audit Logger', () => {
         tenantId: 't1',
       });
       expect(logSpy).toHaveBeenCalledOnce();
-      const line = logSpy.mock.calls[0][1]; // first arg is '[audit]'
+      const line = logSpy.mock.calls[0][1] as string; // first arg is '[audit]'
       const parsed = JSON.parse(line);
       expect(parsed.action).toBe('case.create');
       expect(parsed.actorId).toBe('u1');

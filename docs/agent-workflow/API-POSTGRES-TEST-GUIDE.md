@@ -2,7 +2,7 @@
 
 ## ۱. وضعیت فعلی
 
-ماشین‌حالت فعلی در `packages/agent-core/legal_workflow.py` برای نمونه‌سازی، وضعیت Workflow را در حافظه نگهداری می‌کند:
+ماشین‌حالت فعلی در `packages/agent_core/legal_workflow.py` برای نمونه‌سازی، وضعیت Workflow را در حافظه نگهداری می‌کند:
 
 ```python
 self._workflows: dict[str, CaseWorkflow] = {}

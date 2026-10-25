@@ -94,7 +94,7 @@ flowchart TD
 - `POST /agents/legal-workflow/{id}/deliver`
 - `GET /agents/legal-workflow/{id}`
 
-پیاده‌سازی ماشین‌حالت در `packages/agent-core/legal_workflow.py` قرار دارد و فعلاً provider-agnostic است؛ اتصال مدل، Drive، OCR و دیتابیس از طریق adapter انجام می‌شود.
+پیاده‌سازی ماشین‌حالت در `packages/agent_core/legal_workflow.py` قرار دارد و فعلاً provider-agnostic است؛ اتصال مدل، Drive، OCR و دیتابیس از طریق adapter انجام می‌شود.
 
 ## راهنمای عملیات ناظر
 

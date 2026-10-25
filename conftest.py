@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 
 # Add packages and apps to sys.path so tests can import them
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parent
 for sub in ["packages", "apps/api", "services"]:
     p = ROOT / sub
     if p.exists():
