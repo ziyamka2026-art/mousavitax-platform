@@ -1,0 +1,98 @@
+name: AI Work / مأموریت هوش مصنوعی
+description: ثبت مأموریت، معیار پذیرش، ریسک و گزارش همکاری AI
+title: "[AI-WORK] "
+labels: ["ai-work"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        پیش از اقدام، منشور `docs/AI_COLLABORATION_GOVERNANCE_FA.md` و اسناد مرتبط را بخوانید. از درج کلیدها، توکن‌ها و داده شخصی/محرمانه خودداری کنید.
+  - type: input
+    id: work_id
+    attributes:
+      label: شناسه کار
+      description: شناسه یکتا مانند AI-WORK-001
+      placeholder: AI-WORK-001
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: هدف و نتیجه قابل تحویل
+      placeholder: مسئله و خروجی قابل ارزیابی
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: زمینه و اسناد لازم‌القرائت
+      description: لینک README، معماری، backlog، issue/PR و اسنادی که باید خوانده شوند
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: همکار / ارائه‌دهنده
+      options:
+        - Z.ai / GLM
+        - Claude
+        - Grok
+        - Manus
+        - Perplexity
+        - Genspark
+        - Arena / LMSYS
+        - Groq
+        - DeepSeek
+        - ChatGPT
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: معیارهای پذیرش
+      description: معیارهای قابل آزمون؛ هر معیار باید شواهد داشته باشد
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: محدوده و خارج از محدوده
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: ریسک‌ها، محرمانگی و بازگشت
+      description: آیا تغییر امنیتی، حقوقی، داده‌ای، هزینه‌زا یا برگشت‌ناپذیر است؟
+    validations:
+      required: true
+  - type: checkboxes
+    id: gates
+    attributes:
+      label: دروازه‌های شروع
+      options:
+        - label: منشور و اسناد مرتبط خوانده شده‌اند؛ محدودیت دسترسی اعلام شده است
+          required: true
+        - label: معیار پذیرش و روش آزمون تعریف شده است
+          required: true
+        - label: هیچ secret یا داده حساس در این issue درج نشده است
+          required: true
+  - type: textarea
+    id: kickoff
+    attributes:
+      label: گزارش شروع کار
+      description: مدل/نسخه، تاریخ، اسناد خوانده‌شده/دردسترس‌نبوده، branch، فرضیات و پرسش‌ها
+      value: |
+        ```yaml
+        work_id: ""
+        date_utc: ""
+        provider_model: ""
+        branch: ""
+        read_docs: []
+        unavailable_docs: []
+        assumptions: []
+        questions: []
+        ```
+    validations:
+      required: true
