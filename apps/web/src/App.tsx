@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Ask } from "./pages/Ask";
-import { Terms } from "./pages/Terms";
-import { ConsultationThread } from "./pages/ConsultationThread";
-import { Placeholder } from "./pages/Placeholder";
+import Ask from "./pages/Ask";
+import Terms from "./pages/Terms";
+import ConsultationThread from "./pages/ConsultationThread";
+import Placeholder from "./pages/Placeholder";
 import { menu, type Role, homePath } from "./config/roles";
 
 const labels: Record<string,string> = { dashboard:"داشبورد", office:"دفتر مشاوره", ask:"پرسش مالیاتی", documents:"اسناد", consultations:"مشاوره‌ها", terms:"شرایط استفاده" };
