@@ -1,5 +1,5 @@
 import type { ApiResponse } from "../types/api";
-const base = (import.meta.env.VITE_API_URL as string | undefined)?.replace(/\/$/, "");
+const base = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
 export const apiConnected = Boolean(base);
 export async function ask(message: string, signal?: AbortSignal): Promise<ApiResponse> {
   if (!base) throw new Error("API_NOT_CONNECTED");
