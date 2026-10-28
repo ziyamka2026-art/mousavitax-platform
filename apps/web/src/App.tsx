@@ -1,8 +1,11 @@
+```tsx
 import { useState } from "react";
+
 import Ask from "./pages/Ask";
 import Terms from "./pages/Terms";
 import ConsultationThread from "./pages/ConsultationThread";
 import Placeholder from "./pages/Placeholder";
+
 import { menu, type Role, homePath } from "./config/roles";
 
 const labels: Record<string, string> = {
@@ -14,15 +17,30 @@ const labels: Record<string, string> = {
   terms: "شرایط استفاده",
 };
 
-export function App() {
+function getHomePage(role: Role): string {
+  return homePath[role].replace(/^\/+/, "");
+}
+
+function getDraftAction(): string | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+
+  return (
+    new URLSearchParams(window.location.search).get("draftAction") ||
+    undefined
+  );
+}
+
+export default function App() {
   const [role, setRole] = useState<Role>("owner");
-  const initial = homePath[role].replace("/", "");
-  const [page, setPage] = useState(initial);
+  const [page, setPage] = useState<string>(() => getHomePage("owner"));
+
   const items = menu[role];
 
-  const changeRole = (next: Role) => {
-    setRole(next);
-    setPage(homePath[next].replace("/", ""));
+  const changeRole = (nextRole: Role) => {
+    setRole(nextRole);
+    setPage(getHomePage(nextRole));
   };
 
   const content =
@@ -31,11 +49,7 @@ export function App() {
     ) : page === "terms" ? (
       <Terms />
     ) : page === "consultations" ? (
-      <ConsultationThread
-        draftAction={
-          new URLSearchParams(location.search).get("draftAction") || undefined
-        }
-      />
+      <ConsultationThread draftAction={getDraftAction()} />
     ) : (
       <Placeholder title={labels[page] || "پنل"} />
     );
@@ -44,27 +58,42 @@ export function App() {
     <div className="shell" dir="rtl">
       <aside>
         <h2>MKA / MousaviTax</h2>
-        <label>نقش فعلی</label>
+
+        <label htmlFor="current-role">نقش فعلی</label>
+
         <select
+          id="current-role"
           value={role}
-          onChange={(e) => changeRole(e.target.value as Role)}
+          onChange={(event) => changeRole(event.target.value as Role)}
         >
-          {Object.keys(menu).map((r) => (
-            <option key={r} value={r}>
-              {r}
+          {Object.keys(menu).map((roleName) => (
+            <option key={roleName} value={roleName}>
+              {roleName}
             </option>
           ))}
         </select>
-        {items.map((i) => (
-          <button key={i} onClick={() => setPage(i)}>
-            {labels[i] || i}
-          </button>
-        ))}
+
+        <nav aria-label="منوی اصلی">
+          {items.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => setPage(item)}
+              aria-current={page === item ? "page" : undefined}
+            >
+              {labels[item] || item}
+            </button>
+          ))}
+        </nav>
+
         <small>
-          این انتخاب نقش صرفاً UI است؛ مجوز واقعی توسط Backend اعمال می‌شود.
+          این انتخاب نقش صرفاً رابط کاربری است؛ مجوز واقعی باید در Backend
+          اعمال و اعتبارسنجی شود.
         </small>
       </aside>
-      {content}
+
+      <main>{content}</main>
     </div>
   );
 }
+```
