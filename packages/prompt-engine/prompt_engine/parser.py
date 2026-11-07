@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import re
-from typing import Optional
 
 from .models import APCSCommand, EvidenceLevel, OutputFormat
 
@@ -18,7 +17,7 @@ class APCSParser:
             return APCSCommand()
 
         blocks: dict[str, str] = {}
-        current_key: Optional[str] = None
+        current_key: str | None = None
         current_lines: list[str] = []
 
         for line in text.splitlines():

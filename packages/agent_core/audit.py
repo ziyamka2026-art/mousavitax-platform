@@ -1,7 +1,9 @@
 from __future__ import annotations
-from dataclasses import dataclass, asdict
-from datetime import datetime, timezone
+
+from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 from typing import Any
+
 
 @dataclass
 class AuditEvent:
@@ -17,7 +19,7 @@ class AuditLogger:
         self.events: list[AuditEvent] = []
 
     def record(self, event_type: str, actor_id: str | None, agent: str, **payload: Any) -> AuditEvent:
-        event = AuditEvent(event_type, actor_id, agent, payload, datetime.now(timezone.utc).isoformat())
+        event = AuditEvent(event_type, actor_id, agent, payload, datetime.now(UTC).isoformat())
         self.events.append(event)
         return event
 

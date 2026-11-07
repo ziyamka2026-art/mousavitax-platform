@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -59,13 +59,13 @@ SERVICE_CATALOG: list[dict[str, str]] = [
 
 class TaxCaseCreate(BaseModel):
     taxpayer_name: str = Field(..., min_length=2, max_length=200)
-    mobile: Optional[str] = Field(default=None, max_length=20)
-    national_id_hint: Optional[str] = Field(
+    mobile: str | None = Field(default=None, max_length=20)
+    national_id_hint: str | None = Field(
         default=None, max_length=20, description="اختیاری؛ ترجیحاً کامل ذخیره نشود در MVP"
     )
-    tax_year: Optional[int] = None
-    province: Optional[str] = Field(default=None, max_length=80)
-    city: Optional[str] = Field(default=None, max_length=80)
+    tax_year: int | None = None
+    province: str | None = Field(default=None, max_length=80)
+    city: str | None = Field(default=None, max_length=80)
     summary: str = Field(..., min_length=5, max_length=4000)
     service_code: str = Field(default="S01", max_length=10)
 
@@ -77,10 +77,10 @@ class TaxCase(BaseModel):
     status: CaseStatus = CaseStatus.OPEN
     triage: TriageLevel = TriageLevel.SIMPLE
     taxpayer_name: str
-    mobile: Optional[str] = None
-    tax_year: Optional[int] = None
-    province: Optional[str] = None
-    city: Optional[str] = None
+    mobile: str | None = None
+    tax_year: int | None = None
+    province: str | None = None
+    city: str | None = None
     summary: str
     service_code: str = "S01"
     document_refs: list[str] = Field(default_factory=list)
@@ -91,7 +91,7 @@ class TaxCase(BaseModel):
 
 class ServiceRequestCreate(BaseModel):
     service_code: str = Field(..., max_length=10)
-    case_id: Optional[str] = None
+    case_id: str | None = None
     full_name: str = Field(..., min_length=2, max_length=200)
     mobile: str = Field(..., min_length=10, max_length=20)
     details: str = Field(..., min_length=5, max_length=4000)
@@ -104,7 +104,7 @@ class ServiceRequest(BaseModel):
     status: str = "new"
     service_code: str
     service_title: str = ""
-    case_id: Optional[str] = None
+    case_id: str | None = None
     full_name: str
     mobile: str
     details: str
@@ -115,7 +115,7 @@ class ServiceRequest(BaseModel):
 
 class TriageRequest(BaseModel):
     query: str = Field(..., min_length=3, max_length=4000)
-    service_code: Optional[str] = None
+    service_code: str | None = None
 
 
 class TriageResponse(BaseModel):

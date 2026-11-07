@@ -19,8 +19,9 @@ import json
 import os
 import threading
 from abc import ABC, abstractmethod
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -188,8 +189,8 @@ class QdrantVectorStore(VectorStore):
         self._client = AsyncQdrantClient(url=url, api_key=api_key)
 
     async def _ensure_collection(self, collection: str, dim: int) -> None:
-        from qdrant_client.models import Distance, VectorParams
         from qdrant_client.http.exceptions import UnexpectedResponse
+        from qdrant_client.models import Distance, VectorParams
 
         try:
             await self._client.create_collection(
@@ -229,7 +230,7 @@ class QdrantVectorStore(VectorStore):
         score_threshold: float | None = None,
         filters: dict[str, Any] | None = None,
     ) -> list[SearchHit]:
-        from qdrant_client.models import Filter, FieldCondition, MatchValue
+        from qdrant_client.models import FieldCondition, Filter, MatchValue
 
         must = None
         if filters:

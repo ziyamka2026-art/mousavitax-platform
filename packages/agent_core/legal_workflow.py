@@ -7,7 +7,7 @@ issuance until evidence, clarification and human-review gates pass.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any
 from uuid import uuid4
@@ -67,7 +67,7 @@ class WorkflowEvent:
     actor_id: str | None
     agent_id: str
     details: dict[str, Any]
-    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    created_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass

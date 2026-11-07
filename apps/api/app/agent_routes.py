@@ -1,7 +1,10 @@
 """HTTP boundary for routing and supervised legal-appeal workflows."""
 from __future__ import annotations
+
 from typing import Any
+
 from pydantic import BaseModel, Field
+
 
 class AgentQuery(BaseModel):
     text: str
@@ -39,9 +42,9 @@ class DeliveryIn(BaseModel):
     actor_id: str
 
 def build_agent_router():
-    from fastapi import APIRouter
-    from agent_core.orchestrator import AgentOrchestrator, AgentRequest
     from agent_core.legal_workflow import LegalAppealWorkflow
+    from agent_core.orchestrator import AgentOrchestrator, AgentRequest
+    from fastapi import APIRouter
     router = APIRouter(prefix="/agents", tags=["agents"])
     orchestrator = AgentOrchestrator()
     legal_workflow = LegalAppealWorkflow()

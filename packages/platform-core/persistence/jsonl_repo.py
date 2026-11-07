@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 class JsonlRepository:
@@ -33,7 +33,7 @@ class JsonlRepository:
             for it in items:
                 f.write(json.dumps(it, ensure_ascii=False) + "\n")
 
-    def list(self, filters: Optional[dict[str, Any]] = None) -> list[dict[str, Any]]:
+    def list(self, filters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
         items = self._read_all()
         if not filters:
             return items
@@ -50,7 +50,7 @@ class JsonlRepository:
                 out.append(it)
         return out
 
-    def get(self, id: str) -> Optional[dict[str, Any]]:
+    def get(self, id: str) -> dict[str, Any] | None:
         for it in self._read_all():
             if str(it.get("id")) == str(id):
                 return it
@@ -68,7 +68,7 @@ class JsonlRepository:
         found = None
         for i, it in enumerate(items):
             if str(it.get("id")) == str(id):
-                it = {**it, **patch, "updated_at": datetime.now(timezone.utc).isoformat()}
+                it = {**it, **patch, "updated_at": datetime.now(UTC).isoformat()}
                 items[i] = it
                 found = it
                 break
@@ -82,7 +82,7 @@ class JsonlRepository:
         if "created_at" not in event:
             event = {
                 **event,
-                "created_at": datetime.now(timezone.utc).isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
             }
         with self.audit_path.open("a", encoding="utf-8") as f:
             f.write(json.dumps(event, ensure_ascii=False) + "\n")

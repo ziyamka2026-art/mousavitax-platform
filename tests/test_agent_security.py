@@ -1,6 +1,6 @@
 import pytest
-from agent_core.permissions import AgentActor, PermissionDenied, PermissionGate
 from agent_core.audit import AuditLogger
+from agent_core.permissions import AgentActor, PermissionDenied, PermissionGate
 
 
 def test_actor_required_for_agent_read():

@@ -3,18 +3,13 @@ Unit tests for the JSON-backed Vector Store.
 """
 
 import asyncio
-import math
-import os
 import tempfile
-from pathlib import Path
 
 import pytest
 
 from services.rag.vector_store import (
     JSONVectorStore,
-    SearchHit,
     VectorPoint,
-    VectorStore,
 )
 
 
@@ -27,7 +22,7 @@ def store():
 
 def _vec(s: str) -> list[float]:
     """Hash a string to a fixed 8-dim vector for tests."""
-    return [(float((hash(s) % (i + 7))) % 1000) / 1000.0 for i in range(8)]
+    return [(float(hash(s) % (i + 7)) % 1000) / 1000.0 for i in range(8)]
 
 
 @pytest.mark.unit

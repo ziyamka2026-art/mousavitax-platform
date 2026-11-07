@@ -2,13 +2,13 @@
 
 from .bridge import (
     DEFAULT_SUBFOLDERS,
+    MODULE_CLASSES,
     DriveFile,
     GoogleDriveClient,
     IntakeCalculatorModule,
     LawLibraryModule,
     LayehaAppealWorkflowModule,
     MasterControlModule,
-    MODULE_CLASSES,
     ModuleConfig,
     ModuleId,
     PagedQueueDashboardModule,

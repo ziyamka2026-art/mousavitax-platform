@@ -1,7 +1,9 @@
 from __future__ import annotations
+
+import json
 from typing import Any
 from urllib.request import Request, urlopen
-import json
+
 
 class HttpPlatformServiceClient:
     """Minimal API adapter; authorization remains enforced by the destination API."""

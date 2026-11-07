@@ -1,8 +1,11 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import Any, Protocol
-from .permissions import AgentActor, PermissionGate
+
 from .audit import AuditLogger
+from .permissions import AgentActor, PermissionGate
+
 
 class PlatformServiceClient(Protocol):
     def get_case(self, case_id: str, actor_id: str) -> dict[str, Any]: ...

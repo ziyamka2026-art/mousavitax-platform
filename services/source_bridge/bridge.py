@@ -28,12 +28,11 @@ from __future__ import annotations
 import os
 import re
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
-from typing import Any, AsyncIterator
+from dataclasses import dataclass
+from datetime import UTC, datetime
+from typing import Any
 
 import httpx
-
 
 # ---------------------------------------------------------------------------
 # Module identifiers — match TAXLAW-GROK Constitution Chapter 2
@@ -190,7 +189,7 @@ class GoogleDriveClient:
         # Stub: write through gateway's upload endpoint
         async with httpx.AsyncClient(timeout=120.0) as client:
             res = await client.post(
-                f"https://www.googleapis.com/upload/drive/v3/files"
+                "https://www.googleapis.com/upload/drive/v3/files"
                 "?uploadType=multipart&supportsAllDrives=true",
                 headers={**self._auth_headers(), "Content-Type": "multipart/related"},
                 content=content,
@@ -764,7 +763,7 @@ class SourceBridge:
             "modules_count": len(self._modules),
             "modules": list(self._modules.keys()),
             "client_type": "DemoDriveClient" if self._demo_mode else "GoogleDriveClient",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
         }
 
 

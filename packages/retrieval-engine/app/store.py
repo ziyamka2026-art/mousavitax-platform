@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -24,7 +24,7 @@ class VectorStore:
         raise NotImplementedError
 
     def query(
-        self, query_text: str, top_k: int = 5, filters: Optional[dict] = None
+        self, query_text: str, top_k: int = 5, filters: dict | None = None
     ) -> list[dict[str, Any]]:
         raise NotImplementedError
 
@@ -44,7 +44,7 @@ class InMemoryVectorStore(VectorStore):
         self.persist_path = Path(persist_path)
         self.embedder = embedder
         self._records: list[dict[str, Any]] = []
-        self._matrix: Optional[np.ndarray] = None
+        self._matrix: np.ndarray | None = None
         self._load()
 
     def _load(self) -> None:
@@ -97,7 +97,7 @@ class InMemoryVectorStore(VectorStore):
         self,
         query_text: str,
         top_k: int = 5,
-        filters: Optional[dict] = None,
+        filters: dict | None = None,
     ) -> list[dict[str, Any]]:
         if not self._records or self._matrix is None:
             return []

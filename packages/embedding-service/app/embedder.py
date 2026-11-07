@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import os
-from typing import Sequence
+from collections.abc import Sequence
 
 import httpx
 import numpy as np

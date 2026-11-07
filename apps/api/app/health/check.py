@@ -16,14 +16,11 @@ Safe to expose at /api/health in production.
 from __future__ import annotations
 
 import os
-import sys
 from dataclasses import asdict, dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
-from packages.fiqh_validator.validator import FiqhRule, VALIDATORS
-from packages.oath.runtime_guards import AnalysisStatus
-
+from packages.fiqh_validator.validator import VALIDATORS
 
 # ---------------------------------------------------------------------------
 # Health status data classes
@@ -80,7 +77,7 @@ class HealthResponse:
 # Health check functions
 # ---------------------------------------------------------------------------
 
-_START_TIME = datetime.now(timezone.utc)
+_START_TIME = datetime.now(UTC)
 
 CREDENTIAL_NAMES = [
     ("LOVABLE_API_KEY", "Lovable connector-gateway API key"),
@@ -117,11 +114,11 @@ def check_source_bridge() -> tuple[bool, list[ModuleHealth], str]:
     """Check Source Bridge — returns (demo_mode, modules, error)."""
     try:
         # Import lazily so health doesn't fail if source_bridge is broken
-        from services.source_bridge.demo_client import is_demo_mode
         from services.source_bridge.bridge import MODULE_CLASSES
+        from services.source_bridge.demo_client import is_demo_mode
 
         demo_mode = is_demo_mode()
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         modules = [
             ModuleHealth(module_id=mid, available=True, last_check=now)
             for mid in MODULE_CLASSES.keys()
@@ -138,14 +135,6 @@ def check_fiqh_rules() -> int:
 
 def check_oath_clauses() -> int:
     """Count available oath guard functions."""
-    from packages.oath.runtime_guards import (
-        enforce_oath,
-        law_over_circular,
-        require_ambiguity_flag,
-        require_archival_record,
-        require_citations,
-        require_human_review,
-    )
     return 6  # 6 oath clauses
 
 
@@ -174,7 +163,7 @@ def check_database() -> dict[str, Any]:
 
 
 def compute_uptime() -> float:
-    return (datetime.now(timezone.utc) - _START_TIME).total_seconds()
+    return (datetime.now(UTC) - _START_TIME).total_seconds()
 
 
 def get_health() -> HealthResponse:
@@ -208,7 +197,7 @@ def get_health() -> HealthResponse:
 
     return HealthResponse(
         status=status,
-        timestamp=datetime.now(timezone.utc).isoformat(),
+        timestamp=datetime.now(UTC).isoformat(),
         uptime_seconds=compute_uptime(),
         demo_mode=demo_mode,
         credentials=creds,

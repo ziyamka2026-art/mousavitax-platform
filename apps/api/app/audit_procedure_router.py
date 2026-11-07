@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Optional
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
@@ -17,8 +16,8 @@ ROOT = Path(__file__).resolve().parents[3]
 try:
     from taxlaw_engine import (
         AuditProcedureInput,
-        calculate_audit_procedure,
         audit_procedure_meta,
+        calculate_audit_procedure,
         run_audit_procedure_smoke,
     )
 except ImportError:
@@ -45,7 +44,7 @@ class AuditProcedureRequest(BaseModel):
     concealment_revenue: bool = False
     opex_accepted_on_concealment: str = "na"
     facts_summary: str = ""
-    taxpayer_name: Optional[str] = None
+    taxpayer_name: str | None = None
 
 
 @router.get("/meta")
@@ -91,13 +90,13 @@ async def calculate(body: AuditProcedureRequest):
 
     log_path = ROOT / "data" / "audit_procedure_logs.jsonl"
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    log_id = f"aud-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    log_id = f"aud-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
     with log_path.open("a", encoding="utf-8") as f:
         f.write(
             json.dumps(
                 {
                     "id": log_id,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "created_at": datetime.now(UTC).isoformat(),
                     "inputs": body.model_dump(),
                     "outputs": {k: out[k] for k in out if k not in ("disclaimer", "sources")},
                 },

@@ -1,8 +1,12 @@
 from __future__ import annotations
+
 from typing import Any
+
 from agent_core.permissions import AgentActor
 from agent_core.service_tools import AgentServiceTools
+
 from .agent import OfficeAgent
+
 
 class OfficeOperations:
     def __init__(self, tools: AgentServiceTools, agent: OfficeAgent | None = None) -> None:

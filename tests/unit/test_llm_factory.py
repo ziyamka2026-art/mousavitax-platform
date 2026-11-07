@@ -2,14 +2,11 @@
 Unit tests for the LLM provider factory.
 """
 
-import os
 
 import pytest
-
 from app.llm.factory import (
     ChatMessage,
     GeminiProvider,
-    LLMProvider,
     OllamaProvider,
     OpenAIProvider,
     get_llm,

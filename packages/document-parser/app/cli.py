@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from pathlib import Path
 
 # Allow running as python -m app.cli from packages/document-parser
 try:

@@ -24,7 +24,8 @@
     "exactOptionalPropertyTypes": true,
     "noUncheckedSideEffectImports": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mousavitax/registry": ["../../packages/registry/src/index.ts"]
     }
   }
 }

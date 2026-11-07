@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from .models import APCSCommand, QualityGateResult
 
@@ -14,7 +15,7 @@ class QualityGate:
         self,
         cmd: APCSCommand,
         answer: str,
-        retrieved: Optional[Sequence[dict[str, Any]]] = None,
+        retrieved: Sequence[dict[str, Any]] | None = None,
         require_retrieval: bool = False,
     ) -> QualityGateResult:
         reasons: list[str] = []

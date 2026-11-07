@@ -91,7 +91,7 @@ export function isValidCodeFormat(code: string): boolean {
  */
 export function extractTypeFromCode(code: string): string | null {
   const match = code.match(/^MKA-([A-Z]{3})-\d{3}$/i);
-  return match ? match[1].toUpperCase() : null;
+  return match?.[1] ? match[1].toUpperCase() : null;
 }
 
 /**
@@ -101,7 +101,7 @@ export function extractTypeFromCode(code: string): string | null {
  */
 export function extractSeqFromCode(code: string): number | null {
   const match = code.match(/^MKA-[A-Z]{3}-(\d{3})$/i);
-  return match ? parseInt(match[1], 10) : null;
+  return match?.[1] ? parseInt(match[1], 10) : null;
 }
 
 /**

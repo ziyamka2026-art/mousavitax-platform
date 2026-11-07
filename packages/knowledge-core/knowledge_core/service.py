@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "embedding-service" / "app"))
@@ -19,7 +19,7 @@ from store import InMemoryVectorStore  # noqa: E402
 class KnowledgeService:
     def __init__(
         self,
-        persist_path: Optional[str] = None,
+        persist_path: str | None = None,
         embedder: Any = None,
     ) -> None:
         path = persist_path or os.getenv(
@@ -38,7 +38,7 @@ class KnowledgeService:
         self,
         text: str,
         top_k: int = 5,
-        filters: Optional[dict] = None,
+        filters: dict | None = None,
     ) -> list[dict[str, Any]]:
         if not text.strip():
             return []

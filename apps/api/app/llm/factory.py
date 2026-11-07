@@ -18,8 +18,9 @@ from __future__ import annotations
 
 import os
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
-from typing import Any, AsyncIterator
+from typing import Any
 
 import httpx
 

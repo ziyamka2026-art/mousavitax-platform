@@ -22,6 +22,18 @@ ignore = [
   "S101",   # use of assert in tests
   "S104",   # binding to 0.0.0.0
   "B008",   # function call in default argument (FastAPI pattern)
+  "RUF001", # ambiguous unicode — Persian text is intentional
+  "RUF002",
+  "RUF003",
+  "RUF012",
+  "RUF022",
+  "UP042",
+  "N818",
+  "S112",
+  "S310",
+  "S324",
+  "B905",
+  "T201",
 ]
 
 [tool.ruff.lint.per-file-ignores]

@@ -1,6 +1,7 @@
 """Fiqh Validator package — Principle 3 of TAXLAW-GROK Constitution."""
 
 from .validator import (
+    VALIDATORS,
     AnalysisContext,
     Citation,
     FiqhRule,
@@ -9,7 +10,6 @@ from .validator import (
     ValidationReport,
     enforce_fiqh,
     validate_analysis,
-    VALIDATORS,
 )
 
 __all__ = [

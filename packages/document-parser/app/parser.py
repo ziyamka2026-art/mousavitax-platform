@@ -16,7 +16,6 @@ import io
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -24,8 +23,8 @@ class ParsedChunk:
     """A contiguous text segment with optional page/section metadata."""
 
     text: str
-    page: Optional[int] = None
-    section: Optional[str] = None
+    page: int | None = None
+    section: str | None = None
     chunk_index: int = 0
     char_start: int = 0
     char_end: int = 0
@@ -40,9 +39,9 @@ class ParsedDocument:
     source_type: str  # pdf | docx | markdown | text
     full_text: str
     chunks: list[ParsedChunk] = field(default_factory=list)
-    page_count: Optional[int] = None
+    page_count: int | None = None
     metadata: dict = field(default_factory=dict)
-    error: Optional[str] = None
+    error: str | None = None
 
     @property
     def success(self) -> bool:
@@ -77,8 +76,8 @@ class DocumentParser:
     def parse_file(
         self,
         path: str | Path,
-        source_id: Optional[str] = None,
-        title: Optional[str] = None,
+        source_id: str | None = None,
+        title: str | None = None,
     ) -> ParsedDocument:
         path = Path(path)
         if not path.exists():
@@ -102,7 +101,7 @@ class DocumentParser:
         data: bytes,
         filename: str,
         source_id: str,
-        title: Optional[str] = None,
+        title: str | None = None,
     ) -> ParsedDocument:
         title = title or Path(filename).stem
         ext = Path(filename).suffix.lower().lstrip(".")
@@ -145,7 +144,7 @@ class DocumentParser:
 
             with pdfplumber.open(io.BytesIO(data)) as pdf:
                 page_count = len(pdf.pages)
-                for i, page in enumerate(pdf.pages, start=1):
+                for page in pdf.pages:
                     t = page.extract_text() or ""
                     t = self._normalize_text(t)
                     if t.strip():
@@ -199,7 +198,7 @@ class DocumentParser:
         title: str,
         source_type: str,
         full_text: str,
-        page_count: Optional[int] = None,
+        page_count: int | None = None,
     ) -> ParsedDocument:
         full_text = self._normalize_text(full_text)
         chunks = self._chunk_text(full_text)

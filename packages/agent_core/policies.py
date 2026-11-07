@@ -1,6 +1,8 @@
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import Enum
+
 
 class ActionMode(str, Enum):
     READ_ONLY = "read_only"

@@ -28,26 +28,26 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 from typing import Any, Protocol
 
 from packages.fiqh_validator.validator import (
     AnalysisContext,
     Citation,
-    enforce_fiqh,
-    validate_analysis,
     ValidationReport,
+    validate_analysis,
 )
 from packages.oath.runtime_guards import (
     AnalysisResult,
     AnalysisStatus,
-    Citation as OathCitation,
     OathViolation,
     PIIRedactor,
     enforce_oath,
 )
-
+from packages.oath.runtime_guards import (
+    Citation as OathCitation,
+)
 
 # ---------------------------------------------------------------------------
 # Pipeline data models
@@ -73,7 +73,7 @@ class CaseInput:
     question: str
     documents: list[dict[str, Any]] = field(default_factory=list)  # raw docs
     metadata: dict[str, Any] = field(default_factory=dict)
-    received_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    received_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
 
 
 @dataclass
@@ -139,7 +139,7 @@ class IntakeAndSanitizeStage:
     name = "intake_and_sanitize"
 
     async def execute(self, ctx: PipelineContext) -> StageResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             # Redact PII from the question text
             ctx.sanitized_content = PIIRedactor.redact(ctx.input.question)
@@ -151,7 +151,7 @@ class IntakeAndSanitizeStage:
                 if "metadata" in doc and isinstance(doc["metadata"], dict):
                     doc["metadata"] = PIIRedactor.redact_dict(doc["metadata"])
 
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=True,
@@ -163,7 +163,7 @@ class IntakeAndSanitizeStage:
                 },
             )
         except Exception as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -188,14 +188,14 @@ class FiqhRootingStage:
         self._baseline = baseline_context
 
     async def execute(self, ctx: PipelineContext) -> StageResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             # Build the AnalysisContext from pipeline input
             ac = self._build_analysis_context(ctx)
             report = validate_analysis(ac)
             ctx.fiqh_report = report
 
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             failed_rules = [r.rule.value for r in report.failed_rules()]
             return StageResult(
                 stage=self.name,
@@ -209,7 +209,7 @@ class FiqhRootingStage:
                 error=None if report.overall_passed else report.summary,
             )
         except Exception as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -257,17 +257,17 @@ class KnowledgeRetrievalStage:
     """Fetches relevant knowledge from L1 (cache), L2 (vector), L4 (graph)."""
     name = "knowledge_retrieval"
 
-    def __init__(self, retriever: "KnowledgeRetriever | None" = None):
+    def __init__(self, retriever: KnowledgeRetriever | None = None):
         self._retriever = retriever
 
     async def execute(self, ctx: PipelineContext) -> StageResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             if self._retriever is None:
                 # Use a stub for testing — in production, inject real retriever
                 ctx.retrieved_citations = []
                 ctx.retrieved_evidence = []
-                duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+                duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
                 return StageResult(
                     stage=self.name,
                     passed=True,
@@ -292,7 +292,7 @@ class KnowledgeRetrievalStage:
             ]
             ctx.retrieved_evidence = results
 
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=True,
@@ -303,7 +303,7 @@ class KnowledgeRetrievalStage:
                 },
             )
         except Exception as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -329,11 +329,11 @@ class AppealDraftingStage:
     """Generates a draft appeal document matching repository workflow."""
     name = "appeal_drafting"
 
-    def __init__(self, llm_provider: "LLMProvider | None" = None):
+    def __init__(self, llm_provider: LLMProvider | None = None):
         self._llm = llm_provider
 
     async def execute(self, ctx: PipelineContext) -> StageResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             if self._llm is None:
                 # Stub: produce a structured draft from retrieved citations
@@ -341,7 +341,7 @@ class AppealDraftingStage:
             else:
                 ctx.draft_content = await self._llm_generate(ctx)
 
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=True,
@@ -352,7 +352,7 @@ class AppealDraftingStage:
                 },
             )
         except Exception as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -404,11 +404,11 @@ class ArchiveVersionStage:
     """Persists the analysis to case_analyses (INSERT-only table)."""
     name = "archive_version"
 
-    def __init__(self, archive_sink: "ArchiveSink | None" = None):
+    def __init__(self, archive_sink: ArchiveSink | None = None):
         self._sink = archive_sink
 
     async def execute(self, ctx: PipelineContext) -> StageResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             # Build the AnalysisResult — set status PENDING (NOT FINAL)
             oath_citations = [
@@ -453,7 +453,7 @@ class ArchiveVersionStage:
             if self._sink is not None:
                 ctx.archive_id = await self._sink.archive(ctx.analysis_result)
 
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=True,
@@ -465,7 +465,7 @@ class ArchiveVersionStage:
                 },
             )
         except Exception as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -492,7 +492,7 @@ class HumanReviewHandoffStage:
     name = "human_review_handoff"
 
     async def execute(self, ctx: PipelineContext) -> StageResult:
-        started = datetime.now(timezone.utc)
+        started = datetime.now(UTC)
         try:
             # Enforce Oath guards — this is the FINAL gate
             if ctx.analysis_result is None:
@@ -507,7 +507,7 @@ class HumanReviewHandoffStage:
             # Generate a handoff token for human reviewer
             ctx.handoff_token = str(uuid.uuid4())
 
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=True,
@@ -519,7 +519,7 @@ class HumanReviewHandoffStage:
                 },
             )
         except OathViolation as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -527,7 +527,7 @@ class HumanReviewHandoffStage:
                 error=f"OathViolation: {e}",
             )
         except Exception as e:
-            duration = int((datetime.now(timezone.utc) - started).total_seconds() * 1000)
+            duration = int((datetime.now(UTC) - started).total_seconds() * 1000)
             return StageResult(
                 stage=self.name,
                 passed=False,
@@ -580,7 +580,7 @@ class LegalAnalysisPipeline:
 
     async def execute(self, ctx: PipelineContext) -> PipelineContext:
         """Run all stages in order. Returns the enriched context."""
-        ctx.started_at = datetime.now(timezone.utc).isoformat()
+        ctx.started_at = datetime.now(UTC).isoformat()
 
         for stage in self._stages:
             result = await stage.execute(ctx)
@@ -589,10 +589,10 @@ class LegalAnalysisPipeline:
             if not result.passed:
                 # Rollback this stage and stop
                 stage.rollback(ctx)
-                ctx.completed_at = datetime.now(timezone.utc).isoformat()
+                ctx.completed_at = datetime.now(UTC).isoformat()
                 raise StageFailedError(stage.name, result.error or "unknown", ctx)
 
-        ctx.completed_at = datetime.now(timezone.utc).isoformat()
+        ctx.completed_at = datetime.now(UTC).isoformat()
         return ctx
 
     def get_stages(self) -> list[PipelineStage]:

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -47,13 +47,13 @@ class SourceDocument(BaseModel):
     source_id: str
     source_type: SourceType
     title: str
-    official_ref: Optional[str] = None  # e.g. section number, circular no.
-    effective_from: Optional[date] = None
-    effective_to: Optional[date] = None
-    supersedes: Optional[str] = None  # source_id of previous version
-    superseded_by: Optional[str] = None
-    url: Optional[str] = None
-    storage_path: Optional[str] = None
+    official_ref: str | None = None  # e.g. section number, circular no.
+    effective_from: date | None = None
+    effective_to: date | None = None
+    supersedes: str | None = None  # source_id of previous version
+    superseded_by: str | None = None
+    url: str | None = None
+    storage_path: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -65,11 +65,11 @@ class Citation(BaseModel):
     title: str
     chunk_id: str
     score: float = Field(..., ge=0.0, le=1.0)
-    page: Optional[int] = None
-    section: Optional[str] = None
-    url: Optional[str] = None
-    official_ref: Optional[str] = None
-    effective_from: Optional[date] = None
+    page: int | None = None
+    section: str | None = None
+    url: str | None = None
+    official_ref: str | None = None
+    effective_from: date | None = None
 
 
 class RetrievedChunk(BaseModel):
@@ -80,20 +80,20 @@ class RetrievedChunk(BaseModel):
 
 class RAGRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=4000)
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
+    user_id: str | None = None
+    session_id: str | None = None
     top_k: int = Field(default=5, ge=1, le=20)
-    filters: Optional[dict[str, Any]] = None
+    filters: dict[str, Any] | None = None
     # Optional as-of date for temporal filtering (ADR-002)
-    as_of: Optional[date] = None
+    as_of: date | None = None
 
 
 class RAGResponse(BaseModel):
     answer: str
     citations: list[Citation]
     model: str
-    latency_ms: Optional[int] = None
-    request_id: Optional[str] = None
+    latency_ms: int | None = None
+    request_id: str | None = None
 
 
 class HealthResponse(BaseModel):
@@ -113,12 +113,12 @@ class DocumentChunk(BaseModel):
     source_type: SourceType
     title: str
     text: str
-    page: Optional[int] = None
-    section: Optional[str] = None
-    url: Optional[str] = None
-    official_ref: Optional[str] = None
-    effective_from: Optional[date] = None
-    effective_to: Optional[date] = None
+    page: int | None = None
+    section: str | None = None
+    url: str | None = None
+    official_ref: str | None = None
+    effective_from: date | None = None
+    effective_to: date | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
 
 
@@ -136,9 +136,9 @@ class IndexResponse(BaseModel):
 class QueryRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=4000)
     top_k: int = Field(default=5, ge=1, le=20)
-    filters: Optional[dict[str, Any]] = None
+    filters: dict[str, Any] | None = None
     collection: str = "iran_tax_official"
-    as_of: Optional[date] = None  # temporal validity filter
+    as_of: date | None = None  # temporal validity filter
 
 
 class QueryHit(BaseModel):
@@ -151,4 +151,4 @@ class QueryHit(BaseModel):
 class QueryResponse(BaseModel):
     hits: list[QueryHit]
     query: str
-    latency_ms: Optional[int] = None
+    latency_ms: int | None = None

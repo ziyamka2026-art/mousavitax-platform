@@ -6,6 +6,7 @@ logic without external services.
 """
 
 import asyncio
+
 import pytest
 
 from apps.api.app.orchestrator.pipeline import (

@@ -22,12 +22,9 @@ The combined report is consumed by the LegalAnalysisPipeline Stage 2.
 
 from __future__ import annotations
 
-import json
-import re
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Literal
-
+from typing import Literal
 
 # ---------------------------------------------------------------------------
 # Data models
@@ -461,7 +458,7 @@ def validate_analysis(ctx: AnalysisContext) -> ValidationReport:
     failed = [r for r in results if not r.passed]
 
     if overall:
-        summary = f"✅ همه‌ی ۷ قاعده‌ی فقهی به‌درستی اعمال شده‌اند."
+        summary = "✅ همه‌ی ۷ قاعده‌ی فقهی به‌درستی اعمال شده‌اند."
     else:
         failed_names = [r.rule.value for r in failed]
         summary = (

@@ -1,4 +1,5 @@
 import sys
+
 sys.path.insert(0, "packages/agent_core")
 from agent_core.legal_workflow import Gate, LegalAppealWorkflow, WorkflowError, WorkflowStatus
 
@@ -39,7 +40,7 @@ def test_only_owner_can_approve_and_delivery_requires_approval():
     wf = engine.submit_draft(wf.workflow_id, actor_id="supervisor-1", draft="پیش‌نویس", quality={"blockers": []}, attachment_index=[])
     try:
         engine.approve(wf.workflow_id, supervisor_id="other-user", decision="approve")
-        assert False, "approval must be owner-only"
+        raise AssertionError("approval must be owner-only")
     except WorkflowError:
         pass
     wf = engine.approve(wf.workflow_id, supervisor_id="supervisor-1", decision="approve", note="بازبینی شد")

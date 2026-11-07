@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import os
 import sys
+from datetime import UTC
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -145,13 +146,13 @@ async def health():
 try:
     from taxlaw_engine import (
         CIRCULAR_CONFIG,
-        DOC_CHECKLIST,
         DEFAULT_PENALTY_TYPES,
+        DOC_CHECKLIST,
+        WAIVER_VERSION,
         PenaltyRow,
         WaiverInput,
         calculate_waiver,
         run_smoke_tests,
-        WAIVER_VERSION,
     )
 except ImportError:
     calculate_waiver = None  # type: ignore
@@ -180,8 +181,8 @@ class WaiverCalcRequest(BaseModel):
     special_ok: bool = True
     pay_date: str = ""
     penalties: list[PenaltyIn] = Field(default_factory=list)
-    taxpayer_name: Optional[str] = None
-    source: Optional[str] = None
+    taxpayer_name: str | None = None
+    source: str | None = None
 
 
 @app.get("/v1/tax/waiver/meta")
@@ -234,14 +235,14 @@ async def waiver_calculate(body: WaiverCalcRequest):
     out["human_review_required"] = True
 
     import json
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     log_path = ROOT / "data" / "waiver_calculations.jsonl"
     log_path.parent.mkdir(parents=True, exist_ok=True)
-    log_id = f"wav-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}"
+    log_id = f"wav-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}"
     log_rec = {
         "id": log_id,
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(UTC).isoformat(),
         "status": "pending_human_review",
         "inputs": body.model_dump(),
         "outputs": {k: out[k] for k in out if k not in ("disclaimer",)},
@@ -364,7 +365,7 @@ async def rag_query(body: RAGRequest):
             )
             model_name = "extractive-fallback"
 
-    FAKE_IDS = {
+    fake_ids = {
         "pending-index",
         "general-knowledge",
         "knowledge-base-not-indexed",
@@ -374,7 +375,7 @@ async def rag_query(body: RAGRequest):
     citations = [
         c
         for c in citations
-        if (c.get("source_id") or "") not in FAKE_IDS
+        if (c.get("source_id") or "") not in fake_ids
         and (c.get("source_id") or c.get("title"))
     ]
 
@@ -419,12 +420,12 @@ class AdvisorRequestIn(BaseModel):
 @app.post("/v1/advisors/request")
 async def advisor_request(body: AdvisorRequestIn):
     import json
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     ADVISOR_STORE.parent.mkdir(parents=True, exist_ok=True)
     rec = {
-        "id": f"adv-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "id": f"adv-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}",
+        "created_at": datetime.now(UTC).isoformat(),
         "status": "new",
         "human_review_required": True,
         **body.model_dump(),
@@ -482,12 +483,12 @@ class CareerApplyIn(BaseModel):
 @app.post("/v1/careers/apply")
 async def careers_apply(body: CareerApplyIn):
     import json
-    from datetime import datetime, timezone
+    from datetime import datetime
 
     CAREERS_STORE.parent.mkdir(parents=True, exist_ok=True)
     rec = {
-        "id": f"job-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "id": f"job-{datetime.now(UTC).strftime('%Y%m%d%H%M%S')}",
+        "created_at": datetime.now(UTC).isoformat(),
         "status": "new",
         "human_review_required": True,
         **body.model_dump(),

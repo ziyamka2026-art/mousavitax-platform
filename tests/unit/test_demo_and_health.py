@@ -2,18 +2,22 @@
 Unit tests for Demo Mode (DemoDriveClient) and Health Check.
 """
 
-import os
 import asyncio
-import pytest
-from pathlib import Path
 
+import pytest
+
+from apps.api.app.health.check import (
+    check_database,
+    check_llm_provider,
+    get_health,
+    get_health_simple,
+)
 from services.source_bridge.demo_client import (
-    DemoDriveClient,
     SAMPLE_FILES_META,
+    DemoDriveClient,
     is_demo_mode,
     make_drive_client,
 )
-
 
 # ---------------------------------------------------------------------------
 # Demo mode auto-detection
@@ -225,16 +229,6 @@ def test_make_drive_client_returns_demo_when_forced(monkeypatch):
 # Health Check — get_health()
 # ---------------------------------------------------------------------------
 
-from apps.api.app.health.check import (
-    get_health,
-    get_health_simple,
-    check_credentials,
-    check_database,
-    check_fiqh_rules,
-    check_oath_clauses,
-    check_llm_provider,
-    check_source_bridge,
-)
 
 
 @pytest.mark.unit

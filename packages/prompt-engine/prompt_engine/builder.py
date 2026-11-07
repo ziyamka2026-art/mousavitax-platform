@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any
 
 import yaml
 
@@ -13,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 class PromptBuilder:
-    def __init__(self, domain: str = "iran-tax", domains_root: Optional[Path] = None) -> None:
+    def __init__(self, domain: str = "iran-tax", domains_root: Path | None = None) -> None:
         self.domain = domain
         self.domains_root = domains_root or (REPO_ROOT / "domains")
 
@@ -35,8 +36,8 @@ class PromptBuilder:
     def build(
         self,
         cmd: APCSCommand,
-        retrieved_context: Optional[Sequence[dict[str, Any]]] = None,
-        user_message: Optional[str] = None,
+        retrieved_context: Sequence[dict[str, Any]] | None = None,
+        user_message: str | None = None,
     ) -> dict[str, str]:
         profile = self._load_profile()
         parts: list[str] = [self._load_base_system()]

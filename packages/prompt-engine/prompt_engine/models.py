@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -37,36 +37,36 @@ class RiskLevel(str, Enum):
 
 
 class APCSCommand(BaseModel):
-    role: Optional[str] = None
-    persona: Optional[str] = None
-    task: Optional[str] = None
-    objective: Optional[str] = None
-    success: Optional[str] = None
-    context: Optional[str] = None
-    input_text: Optional[str] = Field(default=None, alias="input")
-    evidence: Optional[str] = None
-    evidence_level: Optional[EvidenceLevel] = None
+    role: str | None = None
+    persona: str | None = None
+    task: str | None = None
+    objective: str | None = None
+    success: str | None = None
+    context: str | None = None
+    input_text: str | None = Field(default=None, alias="input")
+    evidence: str | None = None
+    evidence_level: EvidenceLevel | None = None
     rules: list[str] = Field(default_factory=list)
     constraints: list[str] = Field(default_factory=list)
-    guardrail: Optional[str] = None
-    method: Optional[str] = None
-    analyze: Optional[str] = None
+    guardrail: str | None = None
+    method: str | None = None
+    analyze: str | None = None
     perspectives: list[str] = Field(default_factory=list)
-    compare: Optional[str] = None
-    risk: Optional[str] = None
-    pitfalls: Optional[str] = None
-    assumptions: Optional[str] = None
+    compare: str | None = None
+    risk: str | None = None
+    pitfalls: str | None = None
+    assumptions: str | None = None
     metrics: list[str] = Field(default_factory=list)
     verify: bool = False
     self_check: bool = False
     quality_gate: bool = False
-    decision: Optional[str] = None
-    decision_rule: Optional[str] = None
+    decision: str | None = None
+    decision_rule: str | None = None
     format: OutputFormat = OutputFormat.MARKDOWN
-    audience: Optional[str] = None
-    tone: Optional[str] = None
+    audience: str | None = None
+    tone: str | None = None
     exec_summary: bool = False
-    domain_id: Optional[str] = None
+    domain_id: str | None = None
     raw_blocks: dict[str, str] = Field(default_factory=dict)
     extras: dict[str, Any] = Field(default_factory=dict)
 
@@ -81,5 +81,5 @@ class ValidationResult(BaseModel):
 
 class QualityGateResult(BaseModel):
     passed: bool = True
-    status: Optional[str] = None  # INSUFFICIENT_DATA | CONFLICTING_EVIDENCE | ...
+    status: str | None = None  # INSUFFICIENT_DATA | CONFLICTING_EVIDENCE | ...
     reasons: list[str] = Field(default_factory=list)

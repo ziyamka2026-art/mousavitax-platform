@@ -1,9 +1,9 @@
 """Orchestrator package for the 6-stage legal analysis pipeline."""
 
 from .pipeline import (
+    AppealDraftingStage,
     ArchiveSink,
     ArchiveVersionStage,
-    AppealDraftingStage,
     CaseInput,
     FiqhRootingStage,
     HumanReviewHandoffStage,

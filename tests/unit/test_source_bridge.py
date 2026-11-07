@@ -5,17 +5,17 @@ Uses MockDriveClient to avoid real Google API calls.
 """
 
 import asyncio
+
 import pytest
 
 from services.source_bridge.bridge import (
     DEFAULT_SUBFOLDERS,
+    MODULE_CLASSES,
     DriveFile,
-    GoogleDriveClient,
     IntakeCalculatorModule,
     LawLibraryModule,
     LayehaAppealWorkflowModule,
     MasterControlModule,
-    MODULE_CLASSES,
     ModuleConfig,
     ModuleId,
     PagedQueueDashboardModule,
@@ -25,7 +25,6 @@ from services.source_bridge.bridge import (
     SourceBridgeError,
     SummarizerModule,
 )
-
 
 # ---------------------------------------------------------------------------
 # Mock Drive client — inject in-memory content for tests
@@ -191,7 +190,6 @@ def test_case_index_generates_deterministic_code():
 
 @pytest.mark.unit
 def test_case_index_code_pattern_is_valid():
-    import re
     module = _module(SetupCaseIndexModule, files=[])
     code = module._generate_code("CASE-001")  # type: ignore[attr-defined]
     pattern = module.CASE_CODE_PATTERN  # type: ignore[attr-defined]
@@ -208,7 +206,7 @@ def test_case_index_returns_existing_code_when_file_present():
     module = _module(
         SetupCaseIndexModule,
         files=[file],
-        contents={"idx-1": "existing case code: ABC-1234-567 stored".encode()},
+        contents={"idx-1": b"existing case code: ABC-1234-567 stored"},
     )
     result = asyncio.run(module.fetch(case_id="CASE-001"))
     assert not result["is_new"]
@@ -235,10 +233,10 @@ def test_intake_calculator_parses_ratio_from_csv():
         mime_type="text/csv",
     )
     csv_content = (
-        "intake_code,profit_ratio\n"
-        "12345,0.20\n"
-        "67890,0.35\n"
-    ).encode()
+        b"intake_code,profit_ratio\n"
+        b"12345,0.20\n"
+        b"67890,0.35\n"
+    )
     module = _module(
         IntakeCalculatorModule,
         files=[file],
@@ -258,7 +256,7 @@ def test_intake_calculator_defaults_to_zero_when_code_not_found():
         name="intake_ratios.csv",
         mime_type="text/csv",
     )
-    csv_content = "intake_code,profit_ratio\n12345,0.20\n".encode()
+    csv_content = b"intake_code,profit_ratio\n12345,0.20\n"
     module = _module(
         IntakeCalculatorModule,
         files=[file],

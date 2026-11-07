@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import json
 import re
-import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
@@ -78,7 +77,7 @@ MEDIUM_KEYWORDS = (
 
 
 def _now() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def _id(prefix: str) -> str:
@@ -105,7 +104,7 @@ def _read_jsonl(path: Path, limit: int = 50) -> list[dict]:
     return items
 
 
-def _find_case(case_id: str) -> Optional[dict]:
+def _find_case(case_id: str) -> dict | None:
     for it in _read_jsonl(CASE_STORE, limit=500):
         if it.get("id") == case_id:
             return it
@@ -125,7 +124,7 @@ def _safe_filename(name: str) -> str:
     return base[:180] or "file"
 
 
-def triage_text(query: str, service_code: Optional[str] = None) -> dict[str, Any]:
+def triage_text(query: str, service_code: str | None = None) -> dict[str, Any]:
     q = (query or "").strip()
     if any(k in q for k in COMPLEX_KEYWORDS) or service_code in {
         "S03",
@@ -176,17 +175,17 @@ def triage_text(query: str, service_code: Optional[str] = None) -> dict[str, Any
 
 class TaxCaseCreate(BaseModel):
     taxpayer_name: str = Field(..., min_length=2, max_length=200)
-    mobile: Optional[str] = Field(default=None, max_length=20)
-    tax_year: Optional[int] = None
-    province: Optional[str] = Field(default=None, max_length=80)
-    city: Optional[str] = Field(default=None, max_length=80)
+    mobile: str | None = Field(default=None, max_length=20)
+    tax_year: int | None = None
+    province: str | None = Field(default=None, max_length=80)
+    city: str | None = Field(default=None, max_length=80)
     summary: str = Field(..., min_length=5, max_length=4000)
     service_code: str = Field(default="S01", max_length=10)
 
 
 class ServiceRequestCreate(BaseModel):
     service_code: str = Field(..., max_length=10)
-    case_id: Optional[str] = None
+    case_id: str | None = None
     full_name: str = Field(..., min_length=2, max_length=200)
     mobile: str = Field(..., min_length=10, max_length=20)
     details: str = Field(..., min_length=5, max_length=4000)
@@ -195,7 +194,7 @@ class ServiceRequestCreate(BaseModel):
 
 class TriageIn(BaseModel):
     query: str = Field(..., min_length=3, max_length=4000)
-    service_code: Optional[str] = None
+    service_code: str | None = None
 
 
 class CaseNoteIn(BaseModel):
