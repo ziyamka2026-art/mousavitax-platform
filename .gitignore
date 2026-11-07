@@ -153,3 +153,6 @@ coverage/
 .serverless/
 .fusebox/
 .dynamodb/
+
+# Python wheels / local artifacts
+*.whl
