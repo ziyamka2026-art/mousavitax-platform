@@ -17,6 +17,7 @@ Hybrid: **AI Triage → RAG/APCS + Citation → Human-in-the-loop** · **Tax Cas
 ## گردش‌کار پرونده و لایحه
 
 - [اسکیل مشاوره حقوقی ایران](skills/iran-legal-counsel/SKILL.md)
+- [اسکیل عملیات امن Google Cloud](skills/google-cloud-legal-operations/SKILL.md)
 - [راهنمای اتصال و همگام‌سازی پرونده با Google Drive](docs/ops/CASE_DRIVE_SYNC_FA.md)
 - API: `POST /v1/cases/{case_id}/drive/sync`
 - وضعیت: `GET /v1/cases/{case_id}/drive/status`
