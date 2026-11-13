@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mousavitax.example/schemas/memory2-record.schema.json",
+  "title": "Memory2Record",
+  "type": "object",
+  "required": ["record_id", "source_ids", "case_id", "legal_issues", "confidence", "updated_at"],
+  "properties": {
+    "record_id": {"type": "string"},
+    "source_ids": {"type": "array", "items": {"type": "string"}},
+    "legal_source_ids": {"type": "array", "items": {"type": "string"}},
+    "case_id": {"type": ["string", "null"]},
+    "question": {"type": "string"},
+    "holding_or_rule": {"type": "string"},
+    "key_facts": {"type": "array", "items": {"type": "string"}},
+    "legal_issues": {"type": "array", "items": {"type": "string"}},
+    "arguments_for": {"type": "array", "items": {"type": "string"}},
+    "arguments_against": {"type": "array", "items": {"type": "string"}},
+    "citations": {"type": "array", "items": {"type": "string"}},
+    "confidence": {"enum": ["high", "medium", "low", "needs_review"]},
+    "limitations": {"type": "array", "items": {"type": "string"}},
+    "updated_at": {"type": "string"}
+  },
+  "additionalProperties": true
+}

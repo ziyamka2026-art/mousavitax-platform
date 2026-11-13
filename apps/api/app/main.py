@@ -80,6 +80,15 @@ except Exception as e:  # pragma: no cover
     logging.getLogger("mousavitax").warning("cases router not loaded: %s", e)
 
 try:
+    from drive_cases import router as drive_cases_router
+
+    app.include_router(drive_cases_router)
+except Exception as e:  # pragma: no cover
+    import logging
+
+    logging.getLogger("mousavitax").warning("drive cases router not loaded: %s", e)
+
+try:
     from audit_procedure_router import router as audit_proc_router
 
     app.include_router(audit_proc_router)

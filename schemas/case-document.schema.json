@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mousavitax.example/schemas/case-document.schema.json",
+  "title": "CaseDocument",
+  "type": "object",
+  "required": ["source_id", "case_id", "drive_file_id", "title", "document_type", "text_status"],
+  "properties": {
+    "source_id": {"type": "string", "minLength": 3},
+    "case_id": {"type": "string", "pattern": "^[A-Za-z0-9_-]+$"},
+    "drive_file_id": {"type": "string", "minLength": 3},
+    "title": {"type": "string"},
+    "document_type": {"type": "string"},
+    "authority_level": {"type": "string"},
+    "text_status": {"enum": ["full", "partial", "ocr", "unreadable", "pending"]},
+    "quality_score": {"type": "number", "minimum": 0, "maximum": 1},
+    "sha256": {"type": "string"},
+    "page_count": {"type": ["integer", "null"], "minimum": 0},
+    "text_path": {"type": "string"}
+  },
+  "additionalProperties": true
+}
